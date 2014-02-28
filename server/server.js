@@ -3,28 +3,20 @@ var restify = require('restify'),
    bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
-   log = new bunyan({ name: 'log' }),
-   client = restify.createClient({
-      url: 'https://web-api.ig.com/gateway/deal/session',
-      log: log
-   }),
+   positions = require('./positions'),
+   everything = require('./everything'),
+   log = new bunyan({name: 'log'}),
    server = restify.createServer({
       log: log
-   });
+   }),
+   client = require('./client')(log);
 
 server.use(restify.fullResponse());
-server.use(restify.bodyParser({mapParams: false}));
+server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
 
-login(server);
-sentiment(server);
-
-server.post('/login', function(req, res) {
-   console.log(req);
-   req.send(req);
-   client.post({ identifier: req.body.params.identifier, password: req.params.password}, function(err, response){
-      console.log(response);
-      res.send('hello ' + req.params.username, response);
-   });
-});
+login(server, client, log);
+sentiment(server, client, log);
+positions(server, client, log);
+everything(server, client, log);

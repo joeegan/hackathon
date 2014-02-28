@@ -1,9 +1,15 @@
-module.exports = function(server) {
+module.exports = function(server, client, log) {
 
-   var restify = require('restify'),
-      client = restify.createClient({
-         url: 'https://web-api.ig.com/gateway/deal/session'
+   server.post('/login', function(req, res, next) {
+
+      client.post('/session', {
+         identifier: req.body.identifier,
+         password: req.body.password
+      }, function(result) {
+         res.send(result);
+         return next();
       });
 
-   /** LOGIN ENDPOINT HERE **/
+   });
+
 };
