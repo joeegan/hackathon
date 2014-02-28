@@ -9,7 +9,8 @@ module.exports = function(server, client, log) {
 
       client.get('/prices/' + req.params.epic + '/MINUTE_5?startdate=' + encodeURIComponent(start) + '&enddate=' + encodeURIComponent(end), function(result) {
 
-         var i,
+         var prices = result.prices,
+            i,
             mid,
             sum = 0,
             mean,
@@ -22,7 +23,7 @@ module.exports = function(server, client, log) {
          }
          mean = sum / prices.length;
 
-         for (i = prices.length - 1; i < prices.length - 4; i--) {
+         for (i = prices.length - 1; i > prices.length - 4; i--) {
             mid = (prices[i].closePrice.bid + prices[i].closePrice.ask) / 2;
             squares.push(Math.pow(mid - mean, 2));
          }
@@ -33,7 +34,9 @@ module.exports = function(server, client, log) {
          }
          stddev = Math.sqrt(sum / squares.length);
 
-         res.send(200, stddev);
+         result.index = Math.min(stddev / 2, 10);
+
+         res.send(200, result);
          return next();
       }, req);
    });
