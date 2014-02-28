@@ -57,7 +57,10 @@ module.exports = function(log) {
       }
 
       if (cb !== undefined) {
-         args.push(function(_err, _req, res) {
+         args.push(function(err, _req, res) {
+            if (err) {
+               log.info(err);
+            }
             if (cb) {
                cb(JSON.parse(res.body));
             }
