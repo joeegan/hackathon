@@ -3,7 +3,8 @@ var restify = require('restify'),
    bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
-   log = new bunyan({ name: 'log' }),
+   everything = require('./everything'),
+   log = new bunyan({name: 'log'}),
    server = restify.createServer({
       log: log
    }),
