@@ -4,7 +4,12 @@ module.exports = function(server, client, log) {
 
       client.get('/positions', function(result) {
          res.send(result.positions.map(function(instrument){
-            return { epic: instrument.market.epic, name: instrument.market.instrumentName}
+
+            // dedupe
+            return {
+               epic: instrument.market.epic,
+               name: instrument.market.instrumentName
+            }
          }));
          return next();
       }, req);
