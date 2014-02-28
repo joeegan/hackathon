@@ -2,7 +2,7 @@ module.exports = function(server, client, log) {
 
    var tz = require('timezone');
 
-   server.get('/prices/:epic', function(req, res, next) {
+   server.get('/volatility/:epic', function(req, res, next) {
 
       var end = tz(Date.now(), '%Y:%m:%d-%H:%M:%S'),
          start = tz(Date.now() - 60 * 60000, '%Y:%m:%d-%H:%M:%S');
