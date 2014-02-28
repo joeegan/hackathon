@@ -9,3 +9,5 @@ The example Javascript is bloated in ‘download source’. We should get a JS d
 
 A timestamp would be useful for each activity - history/activity/ - "date": "28/02/14",
         "time": "20:11", is hard to wrangle.
+
+Historic price data fequently down - end point takes 10 seconds to respond with "errorCode": "system.error"
