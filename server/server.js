@@ -1,9 +1,9 @@
 var restify = require('restify'),
-   Q = require('q'),
+   Q = require('noq'),
    bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
-   log = new bunyan(),
+   log = new bunyan({ name: 'log' }),
    client = restify.createClient({
       url: 'https://web-api.ig.com/gateway/deal/session',
       log: log
