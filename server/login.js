@@ -1,33 +1,15 @@
 module.exports = function(server, client, log) {
 
-   var assert = require('assert');
+   server.post('/login', function(serverReq, serverRes, next) {
 
-   server.post('/login', function(req, res, next) {
-
-      client.post('/session', {
-         identifier: req.body.identifier,
-         password: req.body.password
-      }, function(err, req, res, obj) {
-
-         log.info(obj);
-
-         assert.ifError(err);
-
-         req.on('result', function(err, res) {
-            assert.ifError(err);
-            res.body = '';
-            res.setEncoding('utf8');
-            res.on('data', function(chunk) {
-               res.body += chunk;
-            });
-
-            res.on('end', function() {
-               console.log(res.body);
-            });
-         });
-
-         req.send('hello world');
+      client.post('https://web-api.ig.com/gateway/deal/session', {
+         identifier: serverReq.body.identifier,
+         password: serverReq.body.password
+      }, function(err, clientReq, clientRes) {
+         serverRes.send(clientRes.body);
          return next();
       });
+
    });
+
 };

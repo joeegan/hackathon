@@ -1,8 +1,9 @@
-module.exports = function(server, client) {
+module.exports = function(server, client, log) {
 
-   server.get('/sentiment', function(req, res, next) {
-      
-      res.send('hello world');
+   server.get('/sentiment', function(serverReq, serverRes, next) {
+
+      serverRes.send('ok');
       return next();
    });
+
 };

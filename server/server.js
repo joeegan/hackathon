@@ -10,6 +10,8 @@ var restify = require('restify'),
    client = restify.createJsonClient({
       url: 'https://web-api.ig.com/gateway/deal',
       headers: {
+         'Accept': 'application/json; charset=UTF-8',
+         'Content-Type': 'application/json; charset=UTF-8',
          'X-IG-API-KEY': '9326651ab2bae60b2fc6',
          'X-IG-VENDOR': '9326651ab2bae60b2fc6'
       },
@@ -17,9 +19,9 @@ var restify = require('restify'),
    });
 
 server.use(restify.fullResponse());
-server.use(restify.bodyParser({mapParams: false}));
+server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
 
 login(server, client, log);
-sentiment(server, client);
+sentiment(server, client, log);
