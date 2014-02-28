@@ -1,6 +1,6 @@
 var assert = require('assert');
 var restify = require('restify'),
-   Q = require('q'),
+   Q = require('noq'),
    bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
@@ -15,4 +15,4 @@ server.use(restify.gzipResponse());
 server.listen(8080);
 
 login(server, log);
-sentiment(server);
+sentiment(server, log);
