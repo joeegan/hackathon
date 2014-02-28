@@ -3,20 +3,11 @@ var restify = require('restify'),
    bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
-   log = new bunyan({name: 'foo'}),
+   log = new bunyan({ name: 'log' }),
    server = restify.createServer({
       log: log
    }),
-   client = restify.createJsonClient({
-      url: 'https://web-api.ig.com/gateway/deal',
-      headers: {
-         'Accept': 'application/json; charset=UTF-8',
-         'Content-Type': 'application/json; charset=UTF-8',
-         'X-IG-API-KEY': '9326651ab2bae60b2fc6',
-         'X-IG-VENDOR': '9326651ab2bae60b2fc6'
-      },
-      log: log
-   });
+   client = require('./client')(log);
 
 server.use(restify.fullResponse());
 server.use(restify.bodyParser({ mapParams: false }));
