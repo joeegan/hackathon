@@ -1,20 +1,20 @@
-(function(){
+$(document).ready(function(){
 
-   $(document).ready(function(){
+   var SERVER_URL = "http://localhost:8080",
+       CLIENT_URL = "http://localhost:8000";
 
-   var $form = $('form');
+   var $form = $('form'),
+       data;
+
    $form.on('submit', function(ev){
       ev.preventDefault();
-      var data = $(this).serialize();
-      $.post('http://localhost:8080/login', data, function(response){
-         console.log(response);
-         response = JSON.parse(response);
-         $form.hide();
-         document.write('You\'ve logged in ' + response.currentAccountId + ', congrats');
+      data = $(this).serialize();
+      $.post(SERVER_URL + '/login', data, function(){
+         window.location = CLIENT_URL + "/everything";
+      }).fail(function(err) {
+         alert(err);
       });
    });
 
 
-   });
-
-})();
+});

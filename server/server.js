@@ -3,6 +3,7 @@ var restify = require('restify'),
    bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
+   everything = require('./everything'),
    log = new bunyan({name: 'foo'}),
    server = restify.createServer({
       log: log
@@ -23,5 +24,6 @@ server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
 
+everything(server, client, log);
 login(server, client, log);
 sentiment(server, client, log);
