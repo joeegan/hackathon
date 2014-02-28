@@ -10,7 +10,7 @@
     "restify": "~2.6.0"
   },
   "scripts": {
-    "client": "node client/server.js"
+    "client": "node client/server.js",
     "server": "node server/server.js"
   }
 }
