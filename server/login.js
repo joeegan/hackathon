@@ -2,7 +2,7 @@ module.exports = function(server, client) {
 
    var assert = require('assert');
 
-   server.post('/login', function(req, res) {
+   server.post('/login', function(req, res, next) {
 
       client.post('/session', {
          identifier: req.body.identifier,
@@ -26,8 +26,8 @@ module.exports = function(server, client) {
             });
          });
 
-         req.write('hello world');
-         req.end();
+         req.send('hello world');
+         return next();
       });
    });
 };

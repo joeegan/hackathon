@@ -10,8 +10,8 @@ var restify = require('restify'),
    client = restify.createJsonClient({
       url: 'https://web-api.ig.com/gateway/deal',
       headers: {
-         "X-IG-API-KEY":     "9326651ab2bae60b2fc6",
-         "X-IG-VENDOR":      "9326651ab2bae60b2fc6"
+         'X-IG-API-KEY': '9326651ab2bae60b2fc6',
+         'X-IG-VENDOR': '9326651ab2bae60b2fc6'
       },
       log: log
    });
