@@ -1,6 +1,10 @@
 var restify = require('restify'),
+    Q = require('q'),
     login = require('./login'),
     sentiment = require('./sentiment'),
+    client = restify.createClient({
+        url: 'https://web-api.ig.com/gateway/deal/session'
+    }),
     server = restify.createServer();
 
 server.use(restify.fullResponse());
