@@ -1,11 +1,11 @@
 var assert = require('assert');
 var API_KEY = "9326651ab2bae60b2fc6";
 var restify = require('restify'),
-   Q = require('q'),
+   Q = require('noq'),
    bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
-   log = new bunyan(),
+   log = new bunyan({ name: 'log' }),
    client = restify.createClient({
       url: 'https://web-api.ig.com/gateway/deal/session/',
       headers: {
