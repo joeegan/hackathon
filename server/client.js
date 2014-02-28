@@ -12,29 +12,64 @@ module.exports = function(log) {
          log: log
       });
 
-   return {
-      post: function(path, data, callback, request) {
-         client.post({
-            path: 'https://web-api.ig.com/gateway/deal/' + path/*,
-            headers: {
-               'X-SECURITY-TOKEN': request.headers['x-security-token'],
-               'CST': request.headers['cst']
-            }*/
-         }, data, function(_err, _req, res) {
-            callback(res.body);
-         });
-      },
-      get: function(path, callback, request) {
-         client.get({
-            path: 'https://web-api.ig.com/gateway/deal/' + path,
-            headers: {
-               'X-SECURITY-TOKEN': request.headers['x-security-token'],
-               'CST': request.headers['cst']
+   function parseHeaders(request) {
+      if (request && request.headers) {
+         return {
+            'X-SECURITY-TOKEN': request.headers['x-security-token'],
+            'CST': request.headers['cst']
+         };
+      }
+      return {};
+   }
+
+   function proxy(fn, path, data, callback, request) {
+
+      // here be dragons
+
+      var args = [],
+         headers,
+         d,
+         cb;
+
+      if (request !== undefined) {
+         headers = parseHeaders(request);
+      } else if (callback !== undefined && typeof callback !== 'function') {
+         headers = parseHeaders(callback);
+      }
+
+      args.push({
+         path: 'https://web-api.ig.com/gateway/deal' + path,
+         headers: headers
+      });
+
+      if (data !== undefined && typeof data !== 'function') {
+         d = data;
+      }
+
+      if (typeof data === 'function') {
+         cb = data;
+      } else if (typeof callback === 'function') {
+         cb = callback;
+      }
+
+      if (d !== undefined) {
+         args.push(d);
+      }
+
+      if (cb !== undefined) {
+         args.push(function(_err, _req, res) {
+            if (cb) {
+               cb(res.body);
             }
-         }, function(_err, _req, res) {
-            callback(res.body);
          });
       }
+
+      fn.apply(client, args);
+   }
+
+   return {
+      post: proxy.bind(null, client.post),
+      get: proxy.bind(null, client.get)
    };
 
 };
