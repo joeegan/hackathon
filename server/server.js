@@ -3,6 +3,7 @@ var restify = require('restify'),
    bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
+   positions = require('./positions'),
    everything = require('./everything'),
    log = new bunyan({name: 'log'}),
    server = restify.createServer({
@@ -17,3 +18,5 @@ server.listen(8080);
 
 login(server, client, log);
 sentiment(server, client, log);
+positions(server, client, log);
+everything(server, client, log);
