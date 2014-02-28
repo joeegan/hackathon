@@ -1,17 +1,11 @@
 module.exports = function(server, client, log) {
 
-   server.get('/sentiment/:market', function(serverReq, serverRes, next) {
+   server.get('/sentiment/:market', function(req, res, next) {
 
-      client.get({
-         path: 'https://web-api.ig.com/gateway/deal/clientsentiment/' + serverReq.params.market,
-         headers: {
-            'X-SECURITY-TOKEN': serverReq.headers['x-security-token'],
-            'CST': serverReq.headers['cst']
-         }
-      }, function(err, clientReq, clientRes) {
-         serverRes.send(clientRes.body);
+      client.get('/clientsentiment/' + req.params.market, function(result) {
+         res.send(result);
          return next();
-      });
+      }, req);
 
    });
 
