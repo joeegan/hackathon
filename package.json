@@ -10,8 +10,7 @@
     "restify": "~2.6.0"
   },
   "scripts": {
-    "start": "npm run client && npm run server",
-    "client": "node client/server.js",
-    "server": "node server/server.js"
+    "start": "sh -c 'node client/server.js &' && sh -c 'node server/server.js &'",
+    "stop": "kill $(ps aux | grep 'node client/server.js' | awk '{print $2 \" \" $11}' | grep 'node' | awk '{print $1}' && ps aux | grep 'node server/server.js' | awk '{print $2 \" \" $11}' | grep 'node' | awk '{print $1}')"
   }
 }
