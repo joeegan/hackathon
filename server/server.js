@@ -1,8 +1,9 @@
 var restify = require('restify'),
+   Q = require('q'),
    client = restify.createClient({
       url: 'https://web-api.ig.com/gateway/deal/session'
-   });
-server = restify.createServer();
+   }),
+   server = restify.createServer();
 
 server.use(restify.fullResponse());
 server.use(restify.bodyParser({mapParams: false}));
