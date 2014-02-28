@@ -14,13 +14,7 @@ var restify = require('restify'),
    }),
    client = require('./client')(log);
 
-server.use(restify.CORS({
-   origins: [
-      'http://localhost'
-   ]
-}));
-// full response doesn't work with cors
-//server.use(restify.fullResponse());
+server.use(restify.fullResponse());
 server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
