@@ -4,7 +4,8 @@ function MarketHelper(client) {
    this._client = client;
 }
 
-MarketHelper.prototype.getMarkets = function() {
+MarketHelper.prototype.getMarkets = function(req) {
+   this._req = req;
    this._deferred = Q.defer();
    this._processMarkets();
    return this._deferred.promise;
@@ -24,7 +25,7 @@ MarketHelper.prototype._getUserWatchlists = function() {
          }
       });
       deferred.resolve(editableWatchlists);
-   });
+   }, this._req);
    return deferred.promise;
 };
 
