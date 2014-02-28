@@ -1,0 +1,3 @@
+When performing a historic price search if the end date is before the start date the error returned is "system.error" this could be more descriptive
+
+Market ID is not returned as part of the browse or search markets endpoint, therefore you have to make an extra call to get the market details before using something like client sentiment
