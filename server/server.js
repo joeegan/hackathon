@@ -4,6 +4,7 @@ var restify = require('restify'),
    login = require('./login'),
    sentiment = require('./sentiment'),
    positions = require('./positions'),
+   prices = require('./prices'),
    everything = require('./everything'),
    log = new bunyan({name: 'log'}),
    server = restify.createServer({
@@ -11,7 +12,13 @@ var restify = require('restify'),
    }),
    client = require('./client')(log);
 
-server.use(restify.fullResponse());
+server.use(restify.CORS({
+   origins: [
+      'http://localhost'
+   ]
+}));
+// full response doesn't work with cors
+//server.use(restify.fullResponse());
 server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
@@ -19,4 +26,5 @@ server.listen(8080);
 login(server, client, log);
 sentiment(server, client, log);
 positions(server, client, log);
+prices(server, client, log);
 everything(server, client, log);
