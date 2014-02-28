@@ -5,6 +5,7 @@ var restify = require('restify'),
    sentiment = require('./sentiment'),
    positions = require('./positions'),
    volatility = require('./volatility'),
+   movement = require('./movement'),
    everything = require('./everything'),
    log = new bunyan({name: 'log'}),
    server = restify.createServer({
@@ -27,4 +28,5 @@ login(server, client, log);
 sentiment(server, client, log);
 positions(server, client, log);
 volatility(server, client, log);
+movement(server, client, log);
 everything(server, client, log);

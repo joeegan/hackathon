@@ -1,3 +1,7 @@
+/**
+* Takes the client sentiment for a market
+* Weighting is higher when there is a large percentage in one direction
+*/
 module.exports = function(server, client, log) {
 
    server.get('/sentiment/:epic', function(req, res, next) {
@@ -11,7 +15,7 @@ module.exports = function(server, client, log) {
       loadMarketId(function(marketId) {
          client.get('/clientsentiment/' + marketId, function(result) {
 
-            if (!result.longPositionPercentage) {
+            if (!result || !result.longPositionPercentage) {
                res.send(400);
                return next();
             }
