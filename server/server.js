@@ -21,5 +21,5 @@ server.use(restify.bodyParser({mapParams: false}));
 server.use(restify.gzipResponse());
 server.listen(8080);
 
-login(server, client);
+login(server, client, log);
 sentiment(server, client);

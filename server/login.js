@@ -1,4 +1,4 @@
-module.exports = function(server, client) {
+module.exports = function(server, client, log) {
 
    var assert = require('assert');
 
