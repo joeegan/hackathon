@@ -10,7 +10,14 @@ module.exports = function(server, client, log) {
 
       loadMarketId(function(marketId) {
          client.get('/clientsentiment/' + marketId, function(result) {
+
+            if (!result.longPositionPercentage) {
+               res.send(400);
+               return next();
+            }
+
             result.index = Math.abs(result.longPositionPercentage - result.shortPositionPercentage) / 10;
+            
             res.send(200, result);
             return next();
          }, req);
