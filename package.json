@@ -10,7 +10,8 @@
     "restify": "~2.6.0"
   },
   "scripts": {
-    "start-client": "node client/server.js",
-    "start-server": "node server/server.js"
+    "start": "npm run client && npm run server",
+    "client": "node client/server.js",
+    "server": "node server/server.js"
   }
 }
