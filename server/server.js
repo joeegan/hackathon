@@ -1,13 +1,15 @@
 var restify = require('restify'),
-   client = restify.createClient({
-      url: 'https://web-api.ig.com/gateway/deal/session'
-   });
-server = restify.createServer();
+    login = require('./login'),
+    sentiment = require('./sentiment'),
+    server = restify.createServer();
 
 server.use(restify.fullResponse());
 server.use(restify.bodyParser({mapParams: false}));
 server.use(restify.gzipResponse());
 server.listen(8080);
+
+login(server);
+sentiment(server);
 
 server.post('/login', function(req, res) {
    console.log(req);
