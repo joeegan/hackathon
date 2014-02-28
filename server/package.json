@@ -1,0 +1,14 @@
+{
+  "name": "hackathon-server",
+  "author": "The Borg",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "dependencies": {
+    "restify": "~2.6.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
