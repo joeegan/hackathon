@@ -59,7 +59,7 @@ module.exports = function(log) {
       if (cb !== undefined) {
          args.push(function(_err, _req, res) {
             if (cb) {
-               cb(res.body);
+               cb(JSON.parse(res.body));
             }
          });
       }
