@@ -1,11 +1,16 @@
 var restify = require('restify'),
    Q = require('q'),
+   bunyan = require('bunyan'),
    login = require('./login'),
    sentiment = require('./sentiment'),
+   log = new bunyan(),
    client = restify.createClient({
-      url: 'https://web-api.ig.com/gateway/deal/session'
+      url: 'https://web-api.ig.com/gateway/deal/session',
+      log: log
    }),
-   server = restify.createServer();
+   server = restify.createServer({
+      log: log
+   });
 
 server.use(restify.fullResponse());
 server.use(restify.bodyParser({mapParams: false}));
