@@ -8,6 +8,8 @@ var restify = require('restify'),
    movement = require('./movement'),
    history = require('./history'),
    everything = require('./everything'),
+   twitter = require('./twitter'),
+   markets = require('./markets'),
    log = new bunyan({name: 'log'}),
    server = restify.createServer({
       log: log
@@ -25,4 +27,7 @@ positions(server, client, log);
 volatility(server, client, log);
 movement(server, client, log);
 history(server, client, log);
+twitter(server, client, log);
+markets(server, client, log);
+
 everything(server, client, log);
