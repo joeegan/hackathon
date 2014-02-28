@@ -3,3 +3,9 @@ When performing a historic price search if the end date is before the start date
 Market ID is not returned as part of the browse or search markets endpoint, therefore you have to make an extra call to get the market details before using something like client sentiment
 
 The example Javascript is bloated in ‘download source’. We should get a JS dev to rewrite it.
+
+/history/activity/{time} returns marketName
+/positions uses instrumentName - consider using ‘name’ for both?
+
+A timestamp would be useful for each activity - history/activity/ - "date": "28/02/14",
+        "time": "20:11", is hard to wrangle.
