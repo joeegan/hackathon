@@ -16,13 +16,16 @@ var restify = require('restify'),
    }),
    client = require('./client')(log);
 
+restify.CORS.ALLOW_HEADERS.push('x-security-token');
+restify.CORS.ALLOW_HEADERS.push('cst');
+
 server.use(restify.CORS({
    origins: [
-      'http://localhost:8000'
-//      'http://localhost:8080'
+      'http://localhost:8000',
+      'http://localhost:8080'
    ]
 }));
-server.use(restify.bodyParser({ mapParams: false }));
+server.use(restify.bodyParser());
 server.use(restify.gzipResponse());
 server.listen(8080);
 

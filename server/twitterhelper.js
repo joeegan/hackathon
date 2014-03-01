@@ -1,79 +1,74 @@
-var TwitterAPI = require('node-twitter-api'),
-   twitter = require('ntwitter');
+var TwitterAPI = require('ntwitter');
+
+/*** HACK FOR ntwitter ***/
+
+TwitterAPI.prototype.search = function(q, params, callback) {
+   if (typeof params === 'function') {
+      callback = params;
+      params = {};
+   }
+
+   if ( typeof callback !== 'function' ) {
+      throw new Error('FAIL: INVALID CALLBACK.');
+      return this;
+   }
+
+   var url = 'https://api.twitter.com/1.1/search/tweets.json';
+   params = utils.merge(params, {q:q});
+   this.get(url, params, callback);
+   return this;
+};
+
+/*** HACK ENDS ***/
 
 function TwitterHelper(marketIds) {
-   this._marketIds = marketIds;
+   this._marketIds = [].concat(marketIds);
    this._initialise();
 }
 
 TwitterHelper.prototype._twitter = null;
 
+TwitterHelper.prototype._markets = null;
+
+TwitterHelper.prototype._marketIds = null;
+
+TwitterHelper.prototype._cashTags = null;
+
 TwitterHelper.prototype._initialise = function() {
    this._markets = this._marketIds.reduce(function(obj, marketId) {
-      obj[marketId] = 0;
+      obj[marketId] = {
+         count: 0,
+         tweets: []
+      };
       return obj;
    }, {});
 
    this._cashTags = this._marketIds.map(function(marketId) {
       return '$' + marketId;
    });
+
    this._twitter = new TwitterAPI({
-      consumerKey: 'vlxvgHPg0lZHxm1wlkrgug',
-      consumerSecret: 'bvQgZ1rbWaBpdv60pCakxfCarXvjUtjlOF3BCMdOgA',
-      callback: 'http://www.google.co.uk' // doesnt matter
-   });
-   this._search();
-   this._stream();
-};
-
-TwitterHelper.prototype._search = function(term, callback) {
-   if (!this._requestToken) {
-      this._authenticate(this.search.bind(this, term, callback));
-   } else {
-      this._twitter.search({
-            q: this._cashTags.join(' OR ')
-         },
-         '28787819-5CtzUJEoSTCvdwvbDHjHaml9e8DYaeNKL9wB4vbnj',
-         '5iICLywoaQHbm0Wz99l0rPxIXpfcV4O2ekHX43ycFxccy',
-         function(error, data, response) {
-            if (!error) {
-               data.statuses.forEach(this._parseTweet.bind(this));
-            } else {
-               console.log('Error TwitterClient.search failed to perform search for "' + term + '": ' + JSON.stringify(error));
-            }
-         }.bind(this));
-   }
-   return this;
-};
-
-TwitterHelper.prototype._stream = function() {
-//   this._twitter.getStream('filter',
-//      { track: TwitterHelper.CASHTAGS.join(' OR ') },
-//      '28787819-5CtzUJEoSTCvdwvbDHjHaml9e8DYaeNKL9wB4vbnj',
-//      '5iICLywoaQHbm0Wz99l0rPxIXpfcV4O2ekHX43ycFxccy',
-//      function(a, b, c, stream) {
-//         console.log(arguments);
-//         stream.on('data', function(tweet) {
-//            this._parseTweet(tweet);
-//            console.log(arguments);
-//         }.bind(this));
-//
-//      }.bind(this),
-//      function() {
-//         console.log(arguments);
-////         setInterval(function() {
-////            console.log(this._markets);
-////         }.bind(this), 100);
-//      }.bind(this));
-
-   var ts = new twitter({
       consumer_key: 'vlxvgHPg0lZHxm1wlkrgug',
       consumer_secret: 'bvQgZ1rbWaBpdv60pCakxfCarXvjUtjlOF3BCMdOgA',
       access_token_key: '28787819-5CtzUJEoSTCvdwvbDHjHaml9e8DYaeNKL9wB4vbnj',
       access_token_secret: '5iICLywoaQHbm0Wz99l0rPxIXpfcV4O2ekHX43ycFxccy'
    });
+   this._search();
+   this._stream();
+};
 
-   ts.stream('statuses/filter', { track: this._cashTags }, function(stream) {
+TwitterHelper.prototype._search = function() {
+   this._twitter.search(this._cashTags.join(' OR '), {}, function(err, data) {
+      if (!err) {
+         data.statuses.forEach(this._parseTweet.bind(this));
+      } else {
+         console.log('Error TwitterClient.search failed to perform search for "' + this._cashTags.join(' OR ') + '": ' + JSON.stringify(err));
+      }
+   }.bind(this));
+};
+
+TwitterHelper.prototype._stream = function() {
+   this._twitter.stream('statuses/filter', { track: this._cashTags }, function(stream) {
      stream.on('data', function(tweet) {
         this._parseTweet(tweet);
      }.bind(this));
@@ -87,22 +82,11 @@ TwitterHelper.prototype._parseTweet = function(tweet) {
 
       this._cashTags.forEach(function(cashTag, index) {
          if (text.indexOf(cashTag) > -1) {
-            this._markets[this._marketIds[index]]++
+            this._markets[this._marketIds[index]].count++;
+            this._markets[this._marketIds[index]].tweets.push(tweet.text);
          }
       }, this);
    }
-};
-
-TwitterHelper.prototype._authenticate = function(callback) {
-   this._twitter.getRequestToken(function(error, requestToken, requestTokenSecret, results){
-      if (!error) {
-         this._requestToken = requestToken;
-         this._requestTokenSecret = requestTokenSecret;
-         callback();
-      } else {
-         console.log('Error TwitterClient._authenticate failed to retrieve token: ' + JSON.stringify(error));
-      }
-   }.bind(this));
 };
 
 TwitterHelper.prototype.getMarkets = function() {
