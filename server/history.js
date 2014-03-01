@@ -1,6 +1,10 @@
-module.exports = function(server, client, log) {
+/*
+   Returns an array of markets that the user has interacted with in the last 1000000000 milliseconds
+ */
 
-   server.get('/history', function(req, res, next) {
+module.exports = function(client, log) {
+
+   function compute(req, res, next, epic, callback) {
 
       client.get('/history/activity/1000000000', function(result) {
          var epics = [];
@@ -14,9 +18,19 @@ module.exports = function(server, client, log) {
                return order;
             }
          }).filter(function(order){ return !!order; }));
-         return next();
       }, req);
+   }
 
-   });
+   return {
+      compute: compute,
+      serve: function(server) {
+         server.get('/history', function(req, res, next) {
+            compute(req, res, next, function(index) {
+               res.send(200, index);
+               return next();
+            });
+         });
+      }
+   };
 
 };

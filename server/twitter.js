@@ -1,5 +1,6 @@
 module.exports = function(client, log) {
-   var TwitterHelper = require('./twitterHelper');
+   var TwitterHelper = require('./twitterHelper'),
+      twitter = new TwitterHelper();
 
    function compute(req, res, next, epic, callback) {
       function loadMarketId(callback) {
@@ -10,10 +11,9 @@ module.exports = function(client, log) {
 
       loadMarketId(function(marketId) {
          marketId = marketId.split('-')[0].toLowerCase();
-         var twitter = new TwitterHelper(marketId);
-
-         // TODO - this needs to be async
-         res.send(200, twitter.getMarkets());
+         twitter.get(marketId, function(tweets) {
+            res.send(200, tweets);
+         });
 
          return next();
       });
