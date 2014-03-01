@@ -6,12 +6,14 @@ var restify = require('restify'),
       log: log
    }),
    client = require('./client')(log),
-   login = require('./login'),
+   login = require('./login')(client, log),
    sentiment = require('./sentiment')(client, log),
    volatility = require('./volatility')(client, log),
    movement = require('./movement')(client, log),
    markets = require('./markets')(client, log),
    positions = require('./positions'),
+   workingorders = require('./workingorders'),
+   currentlytrading = require('./currentlytrading')(client, log),
    history = require('./history'),
    everything = require('./everything'),
    twitter = require('./twitter')(client, log);
@@ -29,13 +31,18 @@ server.use(restify.bodyParser());
 server.use(restify.gzipResponse());
 server.listen(8080);
 
-login(server, client, log);
+login.serve(server);
 sentiment.serve(server);
 volatility.serve(server);
 movement.serve(server);
+currentlytrading.serve(server);
+twitter.serve(server);
+
 markets.serve(server);
 positions(server, client, log);
 history(server, client, log);
-twitter.serve(server);
+
+workingorders(server, client, log);
+
 
 everything(server, client, log);

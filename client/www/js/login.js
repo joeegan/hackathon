@@ -10,7 +10,7 @@ $(document).ready(function(){
       ev.preventDefault();
       data = $(this).serialize();
       $.post(SERVER_URL + '/login', data, function(){
-         window.location = CLIENT_URL + "/everything";
+         window.location = CLIENT_URL + "/pies.html";
       }).fail(function(err) {
          alert(err);
       });
