@@ -1,22 +1,22 @@
 var Q = require('noq');
 
-function MarketHelper(client) {
+function WatchlistHelper(client) {
    this._client = client;
 }
 
-MarketHelper.prototype.getMarkets = function(req) {
+WatchlistHelper.prototype.getMarkets = function(req) {
    this._req = req;
    this._deferred = Q.defer();
    this._processMarkets();
    return this._deferred.promise;
 };
 
-MarketHelper.prototype._processMarkets = function() {
+WatchlistHelper.prototype._processMarkets = function() {
    this._getUserWatchlists()
       .then(this._getUserMarkets.bind(this));
 };
 
-MarketHelper.prototype._getUserWatchlists = function() {
+WatchlistHelper.prototype._getUserWatchlists = function() {
    var deferred = Q.defer();
    this._client.get('/watchlists', function(resp) {
       var editableWatchlists = resp.watchlists.reduce(function(result, watchlist) {
@@ -30,17 +30,22 @@ MarketHelper.prototype._getUserWatchlists = function() {
    return deferred.promise;
 };
 
-MarketHelper.prototype._getUserMarkets = function(editableWatchlists) {
+WatchlistHelper.prototype._getUserMarkets = function(editableWatchlists) {
    var result = [];
 
    editableWatchlists.forEach(function(id) {
 
       this._client.get('/watchlists/' + id, function(id, resp) {
-         resp.markets.forEach(function(market) {
-            if (result.indexOf(market) == -1) {
-               result.push(market);
+         resp.markets.reduce(function(epics, market) {
+            if (epics.indexOf(market.epic) === -1) {
+               result.push({
+                  epic: market.epic,
+                  name: market.instrumentName
+               });
+               epics.push(market.epic);
             }
-         }, this);
+            return epics;
+         }, []);
 
          editableWatchlists.splice(editableWatchlists.indexOf(id), 1);
 
@@ -51,5 +56,5 @@ MarketHelper.prototype._getUserMarkets = function(editableWatchlists) {
    }, this);
 };
 
-module.exports = MarketHelper;
+module.exports = WatchlistHelper;
 

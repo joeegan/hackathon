@@ -1,5 +1,5 @@
 /**
- * Returns the top ten markets that the user has most open positions or working orders with.
+ * Returns unique markets that the user has open positions or working orders with, in order of quantity.
  */
 
 module.exports = function(client, log, workingorders, currentpositions) {
@@ -27,7 +27,7 @@ module.exports = function(client, log, workingorders, currentpositions) {
             }
             callback(data.sort(function(a,b) {
                return a.quantity < b.quantity;
-            }).slice(0,10));
+            }));
          });
       });
    }
