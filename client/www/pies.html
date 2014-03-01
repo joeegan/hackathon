@@ -1,0 +1,73 @@
+<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+<script src="js/highcharts.js"></script>
+   <script>
+
+      $(function () {
+
+         $.ajaxSetup({
+            headers: {
+               'X-API-KEY': '9326651ab2bae60b2fc6',
+               'X-SECURITY-TOKEN': '1e8aee6ef4522a7a94e96bf7179c7a4a1955f90d15146d256c745df6fdbbb840',
+               'CST': '348249a50c49d1640ab83bdfa8eb40a6e86af27960c75825bdb18ea0689983a2',
+               'Access-Control-Allow-Origin': '*'
+            }
+         });
+
+         $.ajax({
+            url: 'http://localhost:8080/positions',
+            success: function(data) {
+               console.log(data);
+            }
+         });
+
+         $('#container').highcharts({
+            chart: {
+               plotBackgroundColor: null,
+               plotBorderWidth: null,
+               plotShadow: false
+            },
+            title: {
+               text: 'Browser market shares at a specific website, 2010'
+            },
+            tooltip: {
+               pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+               pie: {
+                  allowPointSelect: true,
+                  cursor: 'pointer',
+                  dataLabels: {
+                     enabled: true,
+                     color: '#000000',
+                     connectorColor: '#000000',
+                     format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                  }
+               }
+            },
+            series: [{
+               type: 'pie',
+               name: 'Browser share',
+               data: [
+                  ['Firefox',   45.0],
+                  ['IE',       26.8],
+                  {
+                     name: 'Chrome',
+                     y: 12.8,
+                     sliced: true,
+                     selected: true
+                  },
+                  ['Safari',    8.5],
+                  ['Opera',     6.2],
+                  ['Others',   0.7]
+               ]
+            }]
+         });
+      });
+
+   </script>
+<form>
+
+   <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+   </body>
+</form>

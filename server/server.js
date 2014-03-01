@@ -16,12 +16,12 @@ var restify = require('restify'),
 
 server.use(restify.CORS({
    origins: [
-      'http://localhost'
+      'http://localhost:8000'
+//      'http://localhost:8080'
    ]
 }));
-// full response doesn't work with cors
-//server.use(restify.fullResponse());
 server.use(restify.bodyParser({ mapParams: false }));
+//server.use(restify.fullResponse());
 server.use(restify.gzipResponse());
 server.listen(8080);
 
