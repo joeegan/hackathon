@@ -47,7 +47,7 @@ MarketHelper.prototype._getUserMarkets = function(editableWatchlists) {
          if (!editableWatchlists.length) {
             this._deferred.resolve(result);
          }
-      }.bind(this, id));
+      }.bind(this, id), this._req);
    }, this);
 };
 
