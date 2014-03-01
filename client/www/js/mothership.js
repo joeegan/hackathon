@@ -157,6 +157,7 @@ function initChart(data, selector, title) {
                      }.bind(this))[0];
                      if (d.twitter) {
                         updateTwitterUi({
+                           index: d.twitter.index,
                            count: d.twitter.count,
                            tweets: d.twitter.tweets
                         });
@@ -216,6 +217,7 @@ function render() {
 }
 
 function updateTwitterUi(data) {
+   $('.twitter-index').html(data.index.toFixed(1));
    $('.twitter-count').html(data.count);
    $('.twitter-tweets').empty();
    data.tweets.forEach(function(tweet) {
