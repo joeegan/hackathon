@@ -12,9 +12,9 @@
          });
 
          $.ajax({
-            url: 'http://localhost:8080/positions',
-            success: function(data) {
-               initChart(processData(data, 'quantity'))
+            url: 'http://localhost:8080/currentlytrading',
+            success: function(positions) {
+               initChart(processData(positions, 'quantity'))
             }
          });
 
@@ -34,10 +34,10 @@
                   plotShadow: false
                },
                title: {
-                  text: 'Markets in my Open Positions'
+                  text: 'Currently trading markets'
                },
                tooltip: {
-                  pointFormat: '{series.name}: <b>{point.y.f}%</b>'
+                  pointFormat: '<b>{point.y:.1f}% of the markets in {series.name}s are {point.name}</b>'
                },
                plotOptions: {
                   pie: {
@@ -47,13 +47,13 @@
                         enabled: true,
                         color: '#000000',
                         connectorColor: '#000000',
-                        format: '<b>{point.name}</b>:{point.epic} {point.y:.1f} %'
+                        format: '<b>{point.name}</b>'
                      }
                   }
                },
                series: [{
                   type: 'pie',
-                  name: 'Open position',
+                  name: 'Currently trading',
                   data: data
                }]
             });

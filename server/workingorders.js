@@ -1,10 +1,10 @@
 module.exports = function(client, log) {
 
-   function compute(req, res, next) {
+   function compute(req, res, next, callback) {
 
       client.get('/workingorders', function(result) {
          var epics = [], epic, quantity;
-         res.send(result.workingOrders.map(function(order){
+         callback(result.workingOrders.map(function(order){
             epic = order.workingOrderData.epic;
             epics.push(epic);
             quantity = epics.filter(function(x){return x==epic}).length;
@@ -25,8 +25,8 @@ module.exports = function(client, log) {
       compute: compute,
       serve: function(server) {
          server.get('/workingorders', function(req, res, next) {
-            compute(req, res, next, function(index) {
-               res.send(200, index);
+            compute(req, res, next, function(orders) {
+               res.send(200, orders);
                return next();
             });
          });
