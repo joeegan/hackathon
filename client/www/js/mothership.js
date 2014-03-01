@@ -277,6 +277,8 @@ function updateVolatilityUi(data) {
       return;
    }
    $('#volatility').show();
+   $('.volatility-index').html(data.index.toFixed(1));
+   $('.volatility-text').html(data.index<3 ? 'not very volatile' : (data.index>7 ? 'very volatile' : 'quite volatile'));
 }
 
 function updateMovementUi(data) {
@@ -286,4 +288,6 @@ function updateMovementUi(data) {
       return;
    }
    $('#movement').show();
+   $('.movement-index').html(data.index.toFixed(1));
+   $('.movement-text').html(data.index<3 ? 'not moving very much' : (data.index>7 ? 'moving a lot' : 'moving a fair amount'));
 }
