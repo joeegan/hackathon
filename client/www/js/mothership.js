@@ -1,7 +1,8 @@
 var SERVER_URL = "http://localhost:8080",
    CLIENT_URL = "http://localhost:8888",
    CST,
-   SSO,
+   TIMEOUT = 60000,
+   START_TIMEOUT = 1000,
    suggestMarketsEpics,
    suggestMarketsEpicsMap,
    suggestMarketPoller,
@@ -10,6 +11,8 @@ var SERVER_URL = "http://localhost:8080",
    currentlyTradingPoller,
    suggestMarketTimeout,
    currentlyTradingTimeout,
+   errorTimeout,
+   firstLoad = true,
    selectedFeeds = [];
 
 function init() {
@@ -63,11 +66,16 @@ function getMarketData(){
                   return map;
                }, {});
 
-               currentlyTradingPoller = pollService.bind(null, currentlyTradingEpics, currentlyTradingEpicsMap, '#currently_trading', 'Currently traded markets');
+               currentlyTradingPoller = pollService.bind(null, currentlyTradingEpics, currentlyTradingEpicsMap, '#currently_trading', 'Currently traded markets', function() {
+                 /* suggestMarketTimeout = setTimeout(function() {
+                     suggestMarketPoller();
+                  }, TIMEOUT);    */
+               });
                suggestMarketPoller = pollService.bind(null, suggestMarketsEpics, suggestMarketsEpicsMap, '#suggested_markets', 'Suggested and recently traded markets', function() {
                   currentlyTradingTimeout = setTimeout(function() {
                      currentlyTradingPoller();
-                  }, 1000);
+                     firstLoad = false;
+                  }, firstLoad ? START_TIMEOUT : TIMEOUT);
                });
 
                suggestMarketPoller();
@@ -163,7 +171,7 @@ function initChart(data, selector, title) {
          name: 'Open position',
          data: data
       }]
-   })
+   });
 }
 
 function render() {
@@ -177,15 +185,27 @@ function render() {
       } else if (selectedFeeds.indexOf(this.value) > -1) {
          selectedFeeds.splice(selectedFeeds.indexOf(this.value), 1);
       }
+      $('#streaming').prop('checked', false);
       clearTimeout(suggestMarketTimeout);
       clearTimeout(currentlyTradingTimeout);
       if ($('#feeds :checked').length) {
+         firstLoad = true;
          suggestMarketPoller();
       }
    }).find('input:checked').each(function() {
          selectedFeeds.push(this.value);
       });
 
+
+   $('#streaming').click(function() {
+       if ($(this).prop('checked')) {
+          clearTimeout(suggestMarketTimeout);
+          clearTimeout(currentlyTradingTimeout);
+          clearTimeout(errorTimeout);
+          firstLoad = true;
+          suggestMarketPoller();
+       }
+   });
    getMarketData();
 }
 
