@@ -11,10 +11,10 @@ var restify = require('restify'),
    volatility = require('./volatility')(client, log),
    movement = require('./movement')(client, log),
    markets = require('./markets')(client, log),
-   positions = require('./positions'),
-   workingorders = require('./workingorders'),
+   positions = require('./positions')(client, log),
+   workingorders = require('./workingorders')(client, log),
    currentlytrading = require('./currentlytrading')(client, log),
-   history = require('./history'),
+   history = require('./history')(client, log),
    everything = require('./everything'),
    twitter = require('./twitter')(client, log);
 
@@ -27,7 +27,7 @@ server.use(restify.CORS({
       'http://localhost:8080'
    ]
 }));
-server.use(restify.bodyParser());
+server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
 
@@ -39,10 +39,8 @@ currentlytrading.serve(server);
 twitter.serve(server);
 
 markets.serve(server);
-positions(server, client, log);
-history(server, client, log);
-
-workingorders(server, client, log);
-
+positions.serve(server);
+history.serve(server);
+workingorders.serve(server);
 
 everything(server, client, log);

@@ -62,7 +62,7 @@ module.exports = function(log) {
                log.info(err);
             }
             if (cb) {
-               cb(JSON.parse(res.body));
+               cb(JSON.parse(res.body), res.headers);
             }
          });
       }

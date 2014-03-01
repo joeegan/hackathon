@@ -6,8 +6,10 @@ module.exports = function(client, log) {
             client.post('/session', {
                identifier: req.body.identifier,
                password: req.body.password
-            }, function(result) {
-               res.send(result);
+            }, function(result, headers) {
+               result['CST'] = headers['cst'];
+               result['X-SECURITY-TOKEN'] = headers['x-security-token'];
+               res.send(200, result);
                return next();
             });
          });
