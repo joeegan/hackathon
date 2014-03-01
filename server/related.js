@@ -6,10 +6,42 @@ module.exports = function(client, log) {
 
    function compute(req, res, next, epic, callback) {
 
+      var allMarkets = [];
+
       function loadMarketId(cb) {
          client.get('/markets/' + epic, function(result) {
             cb(result.instrumentData.marketId);
          }, req);
+      }
+
+      function loadMarkets(marketId, cb) {
+         client.get('/markets?q=' + marketId, function(result) {
+            var mkts = (result && result.markets) ? result.markets : [];
+            cb(mkts);
+         }, req);
+      }
+
+      function finito() {
+
+         var finalMarkets = [],
+            mktEpic,
+            marketMap = {},
+            filteredMarkets;
+
+         filteredMarkets = allMarkets.filter(function(item) {
+            return item.instrumentType == 'CURRENCIES' || item.instrumentType == 'INDICES';
+         }).forEach(function(item) {
+            marketMap[item.epic] = item.instrumentName;
+         });
+
+         for (mktEpic in marketMap) {
+            finalMarkets.push({
+               epic: mktEpic,
+               name: marketMap[mktEpic]
+            });
+         }
+
+         callback(finalMarkets);
       }
 
       loadMarketId(function(marketId) {
@@ -18,7 +50,29 @@ module.exports = function(client, log) {
                res.send(400);
                return next();
             }
-            callback(result.clientSentiments.map(function(item) { return item.marketId; }));
+
+            var marketIds = result.clientSentiments.map(function(item) { return item.marketId; }),
+               cbTotal = 1,
+               cbCurrent = 0;
+
+            marketIds.forEach(function(mid) {
+               cbTotal++;
+               loadMarkets(mid, function(markets) {
+                  allMarkets = allMarkets.concat(markets);
+                  cbCurrent++;
+                  if (cbCurrent == cbTotal) {
+                     finito();
+                  }
+               });
+            });
+
+            (function finalise() {
+               cbCurrent++;
+               if (cbCurrent == cbTotal) {
+                  finito();
+               }
+            })();
+
          }, req);
       })
    }
