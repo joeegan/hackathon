@@ -38,7 +38,8 @@ TwitterHelper.prototype._initialise = function() {
    this._markets = this._marketIds.reduce(function(obj, marketId) {
       obj[marketId] = {
          count: 0,
-         tweets: []
+         tweets: [],
+         index: 0
       };
       return obj;
    }, {});
@@ -84,6 +85,7 @@ TwitterHelper.prototype._parseTweet = function(tweet) {
          if (text.indexOf(cashTag) > -1) {
             this._markets[this._marketIds[index]].count++;
             this._markets[this._marketIds[index]].tweets.push(tweet.text);
+            this._markets[this._marketIds[index]].index; // TODO
          }
       }, this);
    }
