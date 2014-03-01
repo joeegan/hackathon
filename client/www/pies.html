@@ -14,32 +14,9 @@
          $.ajax({
             url: 'http://localhost:8080/positions',
             success: function(data) {
-               console.log(data);
+               initChart(processData(data, 'quantity'))
             }
          });
-
-         var openPositions = [
-            {
-               "epic": "IX.D.FTSE.CFD.IP",
-               "name": "FTSE 100 Cash",
-               "quantity": 3
-            },
-            {
-               "epic": "CS.D.CFDGOLD.CFDGC.IP",
-               "name": "Spot Gold",
-               "quantity": 1
-            },
-            {
-               "epic": "CS.D.EURGBP.CFD.IP",
-               "name": "Spot FX EUR/GBP",
-               "quantity": 1
-            },
-            {
-               "epic": "TM.D.TECDAX.IFM.IP",
-               "name": "Germany Tech 30 Cash (EUR2 Mini Contract)",
-               "quantity": 1
-            }
-         ];
 
          function processData(data, key) {
             data.forEach(function(position){
@@ -48,36 +25,39 @@
             return data;
          }
 
-         $('#container').highcharts({
-            chart: {
-               plotBackgroundColor: null,
-               plotBorderWidth: null,
-               plotShadow: false
-            },
-            title: {
-               text: 'Markets in my Open Positions'
-            },
-            tooltip: {
-               pointFormat: '{series.name}: <b>{point.y.f}%</b>'
-            },
-            plotOptions: {
-               pie: {
-                  allowPointSelect: true,
-                  cursor: 'pointer',
-                  dataLabels: {
-                     enabled: true,
-                     color: '#000000',
-                     connectorColor: '#000000',
-                     format: '<b>{point.name}</b>:{point.epic} {point.y:.1f} %'
+         function initChart(data) {
+
+            $('#container').highcharts({
+               chart: {
+                  plotBackgroundColor: null,
+                  plotBorderWidth: null,
+                  plotShadow: false
+               },
+               title: {
+                  text: 'Markets in my Open Positions'
+               },
+               tooltip: {
+                  pointFormat: '{series.name}: <b>{point.y.f}%</b>'
+               },
+               plotOptions: {
+                  pie: {
+                     allowPointSelect: true,
+                     cursor: 'pointer',
+                     dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        format: '<b>{point.name}</b>:{point.epic} {point.y:.1f} %'
+                     }
                   }
-               }
-            },
-            series: [{
-               type: 'pie',
-               name: 'Open position',
-               data: processData(openPositions, 'quantity')
-            }]
-         });
+               },
+               series: [{
+                  type: 'pie',
+                  name: 'Open position',
+                  data: data
+               }]
+            });
+         }
       });
 
    </script>
