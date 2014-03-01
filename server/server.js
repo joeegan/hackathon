@@ -42,7 +42,6 @@ markets.serve(server);
 positions(server, client, log);
 history(server, client, log);
 twitter(server, client, log);
-markets(server, client, log);
 workingorders(server, client, log);
 
 
