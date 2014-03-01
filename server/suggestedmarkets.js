@@ -5,6 +5,7 @@
 module.exports = function(client, log, watchlists, history, related) {
 
    function compute(req, res, next, callback) {
+
       var data = [],
          epics = [];
       watchlists.compute(req, res, next, function(watchlistMarkets) {
@@ -16,29 +17,33 @@ module.exports = function(client, log, watchlists, history, related) {
          history.compute(req, res, next, function(historyMarkets) {
             for (var i=0; i < historyMarkets.length; i++) {
                if (epics.indexOf(historyMarkets[i].epic) == -1) {
+                  epics.push(historyMarkets[i].epic);
                   data.push(historyMarkets[i]);
                }
             }
-            related(data, epics, callback);
+            computeRelated(req, res, next, data, epics, callback);
          });
 
       });
    }
 
-   function related(data, epics, callback) {
+   function computeRelated(req, res, next, data, epics, callback) {
 
-      var epic,
+      var searchEpics = epics.slice(),
+         epic,
          i,
          cbTotal = 1,
          cbCurrent = 0;
 
-      for (i = 0; i < epics.length; i++) {
+      for (i = 0; i < searchEpics.length; i++) {
 
-         epic = epics[i];
+         epic = searchEpics[i];
          cbTotal++;
          related.compute(req, res, next, epic, function(relatedMarkets) {
+
             for (var i=0; i < relatedMarkets.length; i++) {
                if (epics.indexOf(relatedMarkets[i].epic) == -1) {
+                  epics.push(relatedMarkets[i].epic);
                   data.push(relatedMarkets[i]);
                }
             }
