@@ -27,7 +27,7 @@ server.use(restify.CORS({
       'http://localhost:8080'
    ]
 }));
-server.use(restify.bodyParser());
+server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
 
