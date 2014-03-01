@@ -39,21 +39,7 @@ function render() {
        alert('filterme:' + this.value);
    });
 
-//   setInterval(function(){
-
-      $.ajax({
-         url: 'http://localhost:8080/currentlytrading',
-         success: function(data) {
-            getIndex(data, function(scores, epicsMap){
-               for (epic in scores) {
-                  epicsMap[epic].index = scores[epic].index;
-                  epicsMap[epic].sentiment = scores[epic].sentiment;
-               }
-               initChart(processData(epicsMap, 'index'), '#currently_trading', 'My Currently Trading Markets')
-            })
-         }
-      });
-
+   function startCalls (){
       $.ajax({
          url: 'http://localhost:8080/suggestedmarkets',
          success: function(data) {
@@ -67,7 +53,28 @@ function render() {
          }
       });
 
-//   }, 2000);
+      setTimeout(function(){
+         $.ajax({
+            url: 'http://localhost:8080/currentlytrading',
+            success: function(data) {
+               getIndex(data, function(scores, epicsMap){
+                  for (epic in scores) {
+                     epicsMap[epic].index = scores[epic].index;
+                     epicsMap[epic].sentiment = scores[epic].sentiment;
+                  }
+                  initChart(processData(epicsMap, 'index'), '#currently_trading', 'My Currently Trading Markets')
+               })
+            }
+         });
+      },500);
+
+
+   }
+
+   startCalls();
+   setTimeout(function(){
+      startCalls();
+   }, 10000);
 
 
    function getIndex(data, callback){
@@ -79,13 +86,16 @@ function render() {
          epicsMap[market.epic] = market;
       });
 
-      $.ajax({
-         type: 'GET',
-         url: 'http://localhost:8080/everything/sentiment/' + epics,
-         success: function(scores) {
-            callback(scores, epicsMap);
-         }
-      });
+      setTimeout(function(){
+         $.ajax({
+            type: 'GET',
+            url: 'http://localhost:8080/everything/sentiment/' + epics,
+            success: function(scores) {
+               callback(scores, epicsMap);
+            }
+         });
+      }, 500);
+
    }
 
    function processData(data, key) {
@@ -119,6 +129,7 @@ function render() {
          },
          plotOptions: {
             pie: {
+               animation: false,
                allowPointSelect: true,
                cursor: 'pointer',
                dataLabels: {
