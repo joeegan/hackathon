@@ -8,9 +8,9 @@ module.exports = function(client, log) {
 
    function compute(req, res, next, epic, callback) {
 
-      var oneDay = 1000 * 60 * 60 * 24,
-         end = tz(Date.now() - oneDay, '%Y:%m:%d-%H:%M:%S'),
-         start = tz(Date.now() - 60 * 60000 - oneDay, '%Y:%m:%d-%H:%M:%S');
+      var lessOneAndAHalfDaysAsMarketsDontTickOnSaturdayWehnWereDemoing = 1000 * 60 * 60 * 36,
+         end = tz(Date.now() - lessOneAndAHalfDaysAsMarketsDontTickOnSaturdayWehnWereDemoing, '%Y:%m:%d-%H:%M:%S'),
+         start = tz(Date.now() - 60 * 60000 - lessOneAndAHalfDaysAsMarketsDontTickOnSaturdayWehnWereDemoing, '%Y:%m:%d-%H:%M:%S');
 
       client.get('/prices/' + epic + '/MINUTE_5?startdate=' + encodeURIComponent(start) + '&enddate=' + encodeURIComponent(end), function(result) {
 
