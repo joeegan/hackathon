@@ -1,38 +1,48 @@
 /**
- * Takes the client's open positions and working order
- * Weighting is higher if the quantity of combined orders & positions is highest
+ * Returns the top ten markets that the user has most open positions or working orders with.
  */
-module.exports = function(client, log) {
 
-//   function compute(req, res, next, epic, callback) {
-//
-//      function loadMarketId(cb) {
-//         client.get('/markets/' + epic, function(result) {
-//            cb(result.instrumentData.marketId);
-//         }, req);
-//      }
-//
-//      loadMarketId(function(marketId) {
-//         client.get('/clientsentiment/' + marketId, function(result) {
-//            if (!result || !result.longPositionPercentage) {
-//               res.send(400);
-//               return next();
-//            }
-//            callback(Math.abs(result.longPositionPercentage - result.shortPositionPercentage) / 10);
-//         }, req);
-//      })
-//   }
+module.exports = function(client, log, workingorders, currentpositions) {
+
+   function compute(req, res, next, callback) {
+      var data = [];
+      workingorders.compute(req, res, next, function(orders){
+         var epics = [];
+         data = data.concat(orders);
+         for (var i = 0; i < orders.length; i++) {
+            epics.push(orders[i].epic);
+         }
+         currentpositions.compute(req, res, next, function(positions){
+            for (var i=0; i<positions.length; i++) {
+               if (epics.indexOf(positions[i].epic) > -1) {
+                  var item = data.filter(function(order) {
+                     return order.epic == positions[i].epic;
+                  })[0];
+                  if (item) {
+                     item.quantity++;
+                  }
+               } else {
+                  data.push(positions[i]);
+               }
+            }
+            callback(data.sort(function(a,b) {
+               return a.quantity < b.quantity;
+            }).slice(0,10));
+         });
+      });
+   }
 
    return {
-      compute: function(){},
+      compute: compute,
       serve: function(server) {
-         server.get('/positions', function(req, res, next) {
-            res.send(200, 'foo');
-//            compute(req, res, next, req.params.epic, function(index) {
-//            });
-            return next();
+         server.get('/currentlytrading', function(req, res, next) {
+            compute(req, res, next, function(instruments) {
+               res.send(200, instruments);
+               return next();
+            });
          });
       }
    };
 
 };
+
