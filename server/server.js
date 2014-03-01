@@ -25,7 +25,7 @@ restify.CORS.ALLOW_HEADERS.push('cst');
 
 server.use(restify.CORS({
    origins: [
-      'http://localhost:8000',
+      'http://localhost:8888',
       'http://localhost:8080'
    ]
 }));
