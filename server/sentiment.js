@@ -18,7 +18,8 @@ module.exports = function(client, log) {
                res.send(400);
                return next();
             }
-            callback(Math.abs(result.longPositionPercentage - result.shortPositionPercentage) / 10);
+            result.index = Math.abs(result.longPositionPercentage - result.shortPositionPercentage) / 10;
+            callback(result);
          }, req);
       })
    }
@@ -27,8 +28,8 @@ module.exports = function(client, log) {
       compute: compute,
       serve: function(server) {
          server.get('/sentiment/:epic', function(req, res, next) {
-            compute(req, res, next, req.params.epic, function(index) {
-               res.send(200, index);
+            compute(req, res, next, req.params.epic, function(data) {
+               res.send(200, data);
                return next();
             });
          });

@@ -2,7 +2,8 @@ module.exports = function(server, client, log) {
 
    var sentiment = require('./sentiment')(client, log),
       volatility = require('./volatility')(client, log),
-      movement = require('./movement')(client, log);
+      movement = require('./movement')(client, log),
+      twitter = require('./twitter')(client, log);
 
    server.get(/^\/everything\/([a-z,]+)\/(.*)/, function (req, res, next) {
 
@@ -30,11 +31,11 @@ module.exports = function(server, client, log) {
          for (i = 0; i < epics.length; i++) {
             epic = epics[i];
             cbTotal++;
-            fn.compute(req, res, next, epic, function(index) {
+            fn.compute(req, res, next, epic, function(data) {
                if (!results.hasOwnProperty(epic)) {
                   results[epic] = [];
                }
-               results[epic].push(index);
+               results[epic].push(data.index);
                cbCurrent++;
                if (cbCurrent == cbTotal) {
                   finito();
@@ -46,13 +47,14 @@ module.exports = function(server, client, log) {
       if (indexes.indexOf('sentiment') >= 0) {
          compute(sentiment);
       }
-
       if (indexes.indexOf('movement') >= 0) {
          compute(movement);
-         
       }
       if (indexes.indexOf('volatility') >= 0) {
          compute(volatility);
+      }
+      if (indexes.indexOf('twitter') >= 0) {
+         compute(twitter);
       }
 
       (function finalise() {

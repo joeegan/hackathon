@@ -48,7 +48,8 @@ module.exports = function(client, log) {
          }
          stddev = Math.sqrt(sum / squares.length);
 
-         callback(Math.min(stddev / 2, 10) || 0);
+         result.index = Math.min(stddev / 2, 10) || 0;
+         callback(result);
       }, req);
    }
 
@@ -56,8 +57,8 @@ module.exports = function(client, log) {
       compute: compute,
       serve: function(server) {
          server.get('/volatility/:epic', function(req, res, next) {
-            compute(req, res, next, req.params.epic, function(index) {
-               res.send(200, index);
+            compute(req, res, next, req.params.epic, function(data) {
+               res.send(200, data);
                return next();
             });
          });

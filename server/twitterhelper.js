@@ -64,7 +64,11 @@ TwitterHelper.prototype._stream = function() {
    }.bind(this));
 };
 
-TwitterHelper.prototype.get = function(marketId, callback) {
+TwitterHelper.prototype.get = function(id, callback) {
+
+   var _marketId = id.split('-')[0].toLowerCase(),
+      marketId = TwitterHelper.cashMap[_marketId] || _marketId;
+
    if (this._marketIds.indexOf(marketId) === -1) {
       this._marketIds.push(marketId);
       this._cashTags.push('$' + marketId);
@@ -90,10 +94,14 @@ TwitterHelper.prototype._parseTweet = function(tweet) {
          if (text.indexOf(cashTag) > -1) {
             this._markets[this._marketIds[index]].count++;
             this._markets[this._marketIds[index]].tweets.push(tweet.text);
-            this._markets[this._marketIds[index]].index; // TODO
+            this._markets[this._marketIds[index]].index = Math.min(1 + Math.log(this._markets[this._marketIds[index]].count), 10);
          }
       }, this);
    }
+};
+
+TwitterHelper.cashMap = {
+   'ft100': 'ftse'
 };
 
 module.exports = TwitterHelper;
