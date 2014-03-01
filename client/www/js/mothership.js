@@ -221,7 +221,7 @@ function updateTwitterUi(data) {
    $('.twitter-count').html(data.count);
    $('.twitter-tweets').empty();
    data.tweets.forEach(function(tweet) {
-      $('.twitter-tweets').append('<td>' + tweet + '</td>');
+      $('.twitter-tweets').append('<tr><td>' + tweet + '</td></tr>');
    });
 }
 
