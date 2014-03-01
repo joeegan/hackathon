@@ -19,11 +19,12 @@ MarketHelper.prototype._processMarkets = function() {
 MarketHelper.prototype._getUserWatchlists = function() {
    var deferred = Q.defer();
    this._client.get('/watchlists', function(resp) {
-      var editableWatchlists = resp.watchlist.map(function(watchlist) {
+      var editableWatchlists = resp.watchlists.reduce(function(result, watchlist) {
          if (!!watchlist.editable) {
-            return watchlist.id;
+            result.push(watchlist.id);
          }
-      });
+         return result;
+      }, []);
       deferred.resolve(editableWatchlists);
    }, this._req);
    return deferred.promise;
@@ -33,6 +34,7 @@ MarketHelper.prototype._getUserMarkets = function(editableWatchlists) {
    var result = [];
 
    editableWatchlists.forEach(function(id) {
+
       this._client.get('/watchlists/' + id, function(id, resp) {
          resp.markets.forEach(function(market) {
             if (result.indexOf(market) == -1) {
