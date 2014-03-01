@@ -21,7 +21,7 @@ module.exports = function(client, log, watchlists, history, related) {
                   data.push(historyMarkets[i]);
                }
             }
-            callback(data);
+            callback(data.slice(0,7));
             // API key allowance errors so dont do this any more
             //computeRelated(req, res, next, data, epics, callback);
          });
