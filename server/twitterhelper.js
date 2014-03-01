@@ -101,7 +101,11 @@ TwitterHelper.prototype._parseTweet = function(tweet) {
 };
 
 TwitterHelper.cashMap = {
-   'ft100': 'ftse'
+   'ft100': 'ftse',
+   'gc': 'gld',
+   'si': 'lsil',
+   'wall': 'dji',
+   'dete30': 'dax'
 };
 
 module.exports = TwitterHelper;
