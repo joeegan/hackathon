@@ -87,7 +87,7 @@ input[type=text] {
 }
 
 table {
-   width: 200px;
+   width: 800px;
    font-size: 12px;
 }
 
@@ -96,6 +96,19 @@ table {
 }
 #interface label {
     font-size: 1.8em;
+}
+
+#feeds {
+   margin: 20px 0;
+}
+
+.twitter-tweets td {
+   padding: 10px 0;
+}
+
+.streaming {
+   margin: 20px 0;
+   display: block;
 }
 
 #details .panel {
