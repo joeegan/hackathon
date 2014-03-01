@@ -1,11 +1,38 @@
 var TwitterAPI = require('ntwitter');
 
+/*** HACK FOR ntwitter ***/
+
+TwitterAPI.prototype.search = function(q, params, callback) {
+   if (typeof params === 'function') {
+      callback = params;
+      params = {};
+   }
+
+   if ( typeof callback !== 'function' ) {
+      throw new Error('FAIL: INVALID CALLBACK.');
+      return this;
+   }
+
+   var url = 'https://api.twitter.com/1.1/search/tweets.json';
+   params = utils.merge(params, {q:q});
+   this.get(url, params, callback);
+   return this;
+};
+
+/*** HACK ENDS ***/
+
 function TwitterHelper(marketIds) {
    this._marketIds = [].concat(marketIds);
    this._initialise();
 }
 
 TwitterHelper.prototype._twitter = null;
+
+TwitterHelper.prototype._markets = null;
+
+TwitterHelper.prototype._marketIds = null;
+
+TwitterHelper.prototype._cashTags = null;
 
 TwitterHelper.prototype._initialise = function() {
    this._markets = this._marketIds.reduce(function(obj, marketId) {
