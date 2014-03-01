@@ -227,6 +227,7 @@ function updateTwitterUi(data) {
 
 function updateSentimentUi(data) {
    $('.sentiment-index').html(data.index.toFixed(1));
+   $('.sentiment-dir').html(data.longPositionPercentage >= 50 ? 'long' : 'short');
    $('.sentiment-pie').highcharts({
       chart: {
          plotBackgroundColor: null,
