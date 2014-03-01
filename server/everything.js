@@ -11,7 +11,8 @@ module.exports = function(server, client, log) {
           epics = req.params[1].split(','),
           results = {},
           cbTotal = 1,
-          cbCurrent = 0;
+          cbCurrent = 0,
+          calls = [];
 
       function finito() {
 
@@ -31,13 +32,8 @@ module.exports = function(server, client, log) {
          return next();
       }
 
-
-      function compute(fn, name) {
-
-         var i;
-
-         for (i = 0; i < epics.length; i++) {
-            cbTotal++;
+      function doCompute(epics, i, fn, name, compute) {
+         return function() {
             fn.compute(req, res, next, epics[i], function(epic, data) {
                if (!results.hasOwnProperty(epic)) {
                   results[epic] = {};
@@ -48,21 +44,40 @@ module.exports = function(server, client, log) {
                   finito();
                }
             }.bind(null, epics[i]));
+         };
+      }
+
+      function compute(fn, name) {
+
+         var i;
+
+         for (i = 0; i < epics.length; i++) {
+            cbTotal++;
+            setTimeout(doCompute(epics, i, fn, name, compute), cbTotal * 200);
+         }
+      }
+
+      function callit() {
+         calls.shift()();
+         if (calls.length) {
+            setTimeout(callit, 200);
          }
       }
 
       if (indexes.indexOf('sentiment') >= 0) {
-         compute(sentiment, 'sentiment');
+         calls.push(function() { compute(sentiment, 'sentiment'); });
       }
       if (indexes.indexOf('movement') >= 0) {
-         compute(movement, 'movement');
+         calls.push(function() { compute(movement, 'movement'); });
       }
       if (indexes.indexOf('volatility') >= 0) {
-         compute(volatility, 'volatility');
+         calls.push(function() { compute(volatility, 'volatility'); });
       }
       if (indexes.indexOf('twitter') >= 0) {
-         compute(twitter, 'twitter');
+         calls.push(function() { compute(twitter, 'twitter'); });
       }
+
+      callit();
 
       (function finalise() {
          cbCurrent++;
