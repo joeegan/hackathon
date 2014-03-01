@@ -8,6 +8,7 @@ var restify = require('restify'),
    client = require('./client')(log),
    login = require('./login')(client, log),
    sentiment = require('./sentiment')(client, log),
+   related = require('./related')(client, log),
    volatility = require('./volatility')(client, log),
    movement = require('./movement')(client, log),
    markets = require('./markets')(client, log),
@@ -33,11 +34,11 @@ server.listen(8080);
 
 login.serve(server);
 sentiment.serve(server);
+related.serve(server);
 volatility.serve(server);
 movement.serve(server);
 currentlytrading.serve(server);
 twitter.serve(server);
-
 markets.serve(server);
 positions.serve(server);
 history.serve(server);
