@@ -1,7 +1,8 @@
 var SERVER_URL = "http://localhost:8080",
    CLIENT_URL = "http://localhost:8000",
    CST,
-   SSO,
+   TIMEOUT = 60000,
+   START_TIMEOUT = 1000,
    suggestMarketsEpics,
    suggestMarketsEpicsMap,
    suggestMarketPoller,
@@ -10,6 +11,8 @@ var SERVER_URL = "http://localhost:8080",
    currentlyTradingPoller,
    suggestMarketTimeout,
    currentlyTradingTimeout,
+   errorTimeout,
+   firstLoad = true,
    selectedFeeds = [];
 
 function init() {
@@ -41,19 +44,19 @@ $(document).ready(init);
 function getMarketData(){
    $.ajax({
       url: 'http://localhost:8080/suggestedmarkets',
-   }).done(function(data) {
-         suggestMarketsEpics = data.map(function(market){
+   }).done(function(sdata) {
+         suggestMarketsEpics = sdata.map(function(market){
             return market.epic;
          }).join(',');
 
-         suggestMarketsEpicsMap = data.reduce(function(map, market){
+         suggestMarketsEpicsMap = sdata.reduce(function(map, market){
             map[market.epic] = market;
             return map;
          }, {});
 
          $.ajax({
             url: 'http://localhost:8080/currentlytrading'
-         }).done(function() {
+         }).done(function(data) {
                currentlyTradingEpics = data.map(function(market){
                   return market.epic;
                }).join(',');
@@ -63,11 +66,16 @@ function getMarketData(){
                   return map;
                }, {});
 
-               currentlyTradingPoller = pollService.bind(null, currentlyTradingEpics, currentlyTradingEpicsMap, '#currently_trading', 'My Currently Trading Markets');
+               currentlyTradingPoller = pollService.bind(null, currentlyTradingEpics, currentlyTradingEpicsMap, '#currently_trading', 'My Currently Trading Markets', function() {
+                 /* suggestMarketTimeout = setTimeout(function() {
+                     suggestMarketPoller();
+                  }, TIMEOUT);    */
+               });
                suggestMarketPoller = pollService.bind(null, suggestMarketsEpics, suggestMarketsEpicsMap, '#suggested_markets', 'Markets from my watchlists and recent history', function() {
                   currentlyTradingTimeout = setTimeout(function() {
                      currentlyTradingPoller();
-                  }, 1000);
+                     firstLoad = false;
+                  }, firstLoad ? START_TIMEOUT : TIMEOUT);
                });
 
                suggestMarketPoller();
@@ -89,9 +97,14 @@ function pollService(epics, epicMap, elementId, title, callback) {
             callback(scores, epicMap);
          }
          initChart(processData(epicMap, 'index'), elementId, title);
-         /*suggestMarketTimeout = setTimeout(function() {
+      },
+      error: function() {
+         clearTimeout(suggestMarketTimeout);
+         clearTimeout(currentlyTradingTimeout);
+         clearTimeout(errorTimeout);
+         errorTimeout = setTimeout(function() {
             pollService.apply(null, args);
-         }, 10000);*/
+         }, TIMEOUT);
       }
    });
 }
@@ -157,14 +170,26 @@ function render() {
       } else if (selectedFeeds.indexOf(this.value) > -1) {
          selectedFeeds.splice(selectedFeeds.indexOf(this.value), 1);
       }
+      $('#streaming').prop('checked', false);
       clearTimeout(suggestMarketTimeout);
       clearTimeout(currentlyTradingTimeout);
       if ($('#feeds :checked').length) {
+         firstLoad = true;
          suggestMarketPoller();
       }
    }).find('input:checked').each(function() {
          selectedFeeds.push(this.value);
       });
 
+
+   $('#streaming').click(function() {
+       if ($(this).prop('checked')) {
+          clearTimeout(suggestMarketTimeout);
+          clearTimeout(currentlyTradingTimeout);
+          clearTimeout(errorTimeout);
+          firstLoad = true;
+          suggestMarketPoller();
+       }
+   });
    getMarketData();
 }
