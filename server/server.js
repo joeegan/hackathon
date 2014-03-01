@@ -16,7 +16,7 @@ var restify = require('restify'),
    currentlytrading = require('./currentlytrading')(client, log),
    history = require('./history'),
    everything = require('./everything'),
-   twitter = require('./twitter');
+   twitter = require('./twitter')(client, log);
 
 restify.CORS.ALLOW_HEADERS.push('x-security-token');
 restify.CORS.ALLOW_HEADERS.push('cst');
@@ -36,12 +36,12 @@ sentiment.serve(server);
 volatility.serve(server);
 movement.serve(server);
 currentlytrading.serve(server);
-
+twitter.serve(server);
 
 markets.serve(server);
 positions(server, client, log);
 history(server, client, log);
-twitter(server, client, log);
+
 workingorders(server, client, log);
 
 
