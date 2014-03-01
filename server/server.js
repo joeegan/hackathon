@@ -8,13 +8,20 @@ var restify = require('restify'),
    movement = require('./movement'),
    history = require('./history'),
    everything = require('./everything'),
+   twitter = require('./twitter'),
+   markets = require('./markets'),
    log = new bunyan({name: 'log'}),
    server = restify.createServer({
       log: log
    }),
    client = require('./client')(log);
 
-server.use(restify.fullResponse());
+server.use(restify.CORS({
+   origins: [
+      'http://localhost:8000'
+//      'http://localhost:8080'
+   ]
+}));
 server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
@@ -25,4 +32,7 @@ positions(server, client, log);
 volatility(server, client, log);
 movement(server, client, log);
 history(server, client, log);
+twitter(server, client, log);
+markets(server, client, log);
+
 everything(server, client, log);
