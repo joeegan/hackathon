@@ -16,13 +16,18 @@ var restify = require('restify'),
    }),
    client = require('./client')(log);
 
-server.use(restify.fullResponse());
+server.use(restify.CORS({
+   origins: [
+      'http://localhost:8000'
+//      'http://localhost:8080'
+   ]
+}));
 server.use(restify.bodyParser({ mapParams: false }));
 server.use(restify.gzipResponse());
 server.listen(8080);
 
 login(server, client, log);
-sentiment(server, client, log);
+sentiment.serve(server, client, log);
 positions(server, client, log);
 volatility(server, client, log);
 movement(server, client, log);
