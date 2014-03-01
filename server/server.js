@@ -16,7 +16,7 @@ var restify = require('restify'),
    history = require('./history')(client, log),
    workingorders = require('./workingorders')(client, log),
    currentlytrading = require('./currentlytrading')(client, log, workingorders, positions),
-   suggestedmarkets = require('./suggestedmarkets')(client, log, watchlists, history),
+   suggestedmarkets = require('./suggestedmarkets')(client, log, watchlists, history, related),
    everything = require('./everything'),
    twitter = require('./twitter')(client, log);
 
