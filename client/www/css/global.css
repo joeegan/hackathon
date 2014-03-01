@@ -55,10 +55,10 @@ footer p {
     width: 90%;
     padding: 10px;
 }
-#currently_trading {
-	min-width: 310px;
+#suggested_markets, #currently_trading {
+	width: 50%;
 	height: 400px;
-	margin: 20px auto 40px;
+	float: left;
 }
 #page_footer {
     line-height: 1em;
