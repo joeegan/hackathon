@@ -14,7 +14,7 @@ var restify = require('restify'),
    positions = require('./positions'),
    history = require('./history'),
    everything = require('./everything'),
-   twitter = require('./twitter');
+   twitter = require('./twitter')(client, log);
 
 restify.CORS.ALLOW_HEADERS.push('x-security-token');
 restify.CORS.ALLOW_HEADERS.push('cst');
@@ -36,6 +36,6 @@ movement.serve(server);
 markets.serve(server);
 positions(server, client, log);
 history(server, client, log);
-twitter(server, client, log);
+twitter.serve(server);
 
 everything(server, client, log);
