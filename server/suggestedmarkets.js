@@ -21,7 +21,9 @@ module.exports = function(client, log, watchlists, history, related) {
                   data.push(historyMarkets[i]);
                }
             }
-            computeRelated(req, res, next, data, epics, callback);
+            callback(data);
+            // API key allowance errors so dont do this any more
+            //computeRelated(req, res, next, data, epics, callback);
          });
 
       });
@@ -34,7 +36,6 @@ module.exports = function(client, log, watchlists, history, related) {
          cbTotal = 1,
          cbCurrent = 0;
 
-      // API key allowance errors so only use first one
       searchEpics = [searchEpics[0]];
 
       for (i = 0; i < searchEpics.length; i++) {
