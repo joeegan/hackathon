@@ -6,8 +6,7 @@ module.exports = function(server, client, log) {
 
       marketHelper.getMarkets(req).then(function(markets) {
          var json = JSON.stringify(markets);
-         log(json);
-         res.send(200, json);
+         res.send(json);
          return next();
       });
 
