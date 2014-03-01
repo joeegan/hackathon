@@ -6,7 +6,7 @@ var restify = require('restify'),
       log: log
    }),
    client = require('./client')(log),
-   login = require('./login'),
+   login = require('./login')(client, log),
    sentiment = require('./sentiment')(client, log),
    volatility = require('./volatility')(client, log),
    movement = require('./movement')(client, log),
@@ -31,7 +31,7 @@ server.use(restify.bodyParser());
 server.use(restify.gzipResponse());
 server.listen(8080);
 
-login(server, client, log);
+login.serve(server);
 sentiment.serve(server);
 volatility.serve(server);
 movement.serve(server);
