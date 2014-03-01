@@ -161,6 +161,8 @@ function initChart(data, selector, title) {
                      }.bind(this))[0];
                      updateTwitterUi(d.twitter);
                      updateSentimentUi(d.sentiment);
+                     updateVolatilityUi(d.volatility);
+                     updateMovementUi(d.movement);
                   }
                }
             }
@@ -268,3 +270,20 @@ function updateSentimentUi(data) {
    });
 }
 
+function updateVolatilityUi(data) {
+
+   if (!data) {
+      $('#volatility').hide();
+      return;
+   }
+   $('#volatility').show();
+}
+
+function updateMovementUi(data) {
+
+   if (!data) {
+      $('#movement').hide();
+      return;
+   }
+   $('#movement').show();
+}

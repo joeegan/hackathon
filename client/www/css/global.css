@@ -117,3 +117,6 @@ table {
    float: left;
    overflow: hidden;
 }
+.sentiment-pie {
+    height: 250px;
+}
