@@ -91,6 +91,16 @@ table {
    font-size: 12px;
 }
 
+#feeds {
+   clear: both;
+}
 #interface label {
     font-size: 1.8em;
+}
+
+#details .panel {
+   width: 50%;
+   height: 400px;
+   float: left;
+   overflow: hidden;
 }

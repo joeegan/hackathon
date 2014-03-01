@@ -151,7 +151,7 @@ function initChart(data, selector, title) {
             },
             point: {
                events: {
-                  mouseOver: function() {
+                  click: function() {
                      var d = data.filter(function(market){
                         return market.epic == this.epic
                      }.bind(this))[0];
@@ -161,6 +161,12 @@ function initChart(data, selector, title) {
                            tweets: d.twitter.tweets
                         });
                      }
+                     updateSentimentUi({
+                        index: 2.4,
+                        longPositionPercentage: 38,
+                        marketId: "EURGBP",
+                        shortPositionPercentage: 62
+                     });
                   }
                }
             }
@@ -216,3 +222,41 @@ function updateTwitterUi(data) {
       $('.twitter-tweets').append('<td>' + tweet + '</td>');
    });
 }
+
+function updateSentimentUi(data) {
+   $('.sentiment-index').html(data.index.toFixed(1));
+   $('.sentiment-pie').highcharts({
+      chart: {
+         plotBackgroundColor: null,
+         plotBorderWidth: null,
+         plotShadow: false
+      },
+      title: {
+         text: ''
+      },
+      tooltip: {
+         pointFormat: '<b>{point.y:.f}%</b>'
+      },
+      plotOptions: {
+         series: {
+            animation: false,
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+               enabled: true,
+               color: '#000000',
+               connectorColor: '#000000',
+               format: '<b>{point.name}</b> {point.y:.1f} %'
+            }
+         }
+      },
+      series: [{
+         type: 'pie',
+         data: [
+            { name: 'Long', y: data.longPositionPercentage },
+            { name: 'Short', y: data.shortPositionPercentage }
+         ]
+      }]
+   });
+}
+

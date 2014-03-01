@@ -26,6 +26,23 @@
       <section id="interface">
          <div id="suggested_markets"></div>
          <div id="currently_trading"></div>
+         <div id="details">
+            <div class="panel" id="twitter">
+               <table>
+                  <tr>
+                     <td><b>Amount of tweets</b>:</td>
+                     <td class="twitter-count"></td>
+                  </tr>
+                  <tr class="twitter-tweets">
+                  </tr>
+                  </tr>
+               </table>
+            </div>
+            <div class="panel" id="sentiment">
+               <h2>Sentiment: <span class="sentiment-index"></span> / 10</h2>
+               <div class="sentiment-pie"></div>
+            </div>
+         </div>
          <div id="feeds">
             <h2>feeds</h2>
             <label><input type="checkbox" value="sentiment" checked="checked" /> sentiment</label>
@@ -33,16 +50,6 @@
             <label><input type="checkbox" value="volatility" />volatility</label>
             <label><input type="checkbox" value="twitter" />twitter</label>
          </div>
-         <table>
-            <tr>
-               <td><b>Amount of tweets</b>:</td>
-               <td class=twitter-count></td>
-            </tr>
-            <tr class=twitter-tweets>
-            </tr>
-            </tr>
-         </table>
-         <br>
          <label><input id="streaming"  type="checkbox" value="twitter" />live streaming</label>
       </section>
        <footer id="page_footer">
