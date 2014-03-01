@@ -83,7 +83,12 @@ function pollService(epics, epicMap, elementId, title, callback) {
       success: function(scores) {
          for (var epic in scores) {
             epicMap[epic].index = scores[epic].index;
-            epicMap[epic].sentiment = scores[epic].sentiment;
+            if (scores[epic].sentiment) {
+               epicMap[epic].sentiment = scores[epic].sentiment;
+            }
+            if (scores[epic].twitter) {
+               epicMap[epic].twitter = scores[epic].twitter;
+            }
          }
          if (callback) {
             callback(scores, epicMap);
@@ -139,16 +144,15 @@ function initChart(data, selector, title) {
             point: {
                events: {
                   mouseOver: function() {
-                     console.log(data);
-                     var d = data.reduce(function(market){
+                     var d = data.filter(function(market){
                         return market.epic == this.epic
-                     });
-                     console.log(d);
-                     updateTwitterUi({
-                        count: Math.random(),
-                        index: 1,
-                        tweets: ["RT @ForexStopHunter: RT @Nouf_wpt: $FTSE Banks are struggling, banks are not in a bull market http://t.co/FW8tUeNapY Hi Nouf Russell IWM St…", "RT @Swedishbearmark: Finally a good moment to use this picture:↵ $SPX $SPY $NDX $OMX $FTSE $DAX #putin #bearmarket #russia #ukraine http://…"]
-                     });
+                     }.bind(this))[0];
+                     if (d.twitter) {
+                        updateTwitterUi({
+                           count: d.twitter.count,
+                           tweets: d.twitter.tweets
+                        });
+                     }
                   }
                }
             }
@@ -187,7 +191,6 @@ function render() {
 
 function updateTwitterUi(data) {
    $('.twitter-count').html(data.count);
-   $('.twitter-index').html(data.index.toFixed(1));
    $('.twitter-tweets').empty();
    data.tweets.forEach(function(tweet) {
       $('.twitter-tweets').append('<td>' + tweet + '</td>');
