@@ -26,7 +26,10 @@ function init() {
 
    $('#login').show();
    $('#interface').hide();
+
+
 }
+var ajaxQueue = [];
 $(document).ready(init);
 
 
@@ -40,7 +43,7 @@ function render() {
    });
 
    function startCalls (){
-      $.ajax({
+      ajaxQueue.push({
          url: 'http://localhost:8080/suggestedmarkets',
          success: function(data) {
             getIndex(data, function(scores, epicsMap){
@@ -53,25 +56,29 @@ function render() {
          }
       });
 
-      setTimeout(function(){
-         $.ajax({
-            url: 'http://localhost:8080/currentlytrading',
-            success: function(data) {
-               getIndex(data, function(scores, epicsMap){
-                  for (epic in scores) {
-                     epicsMap[epic].index = scores[epic].index;
-                     epicsMap[epic].sentiment = scores[epic].sentiment;
-                  }
-                  initChart(processData(epicsMap, 'index'), '#currently_trading', 'My Currently Trading Markets')
-               })
-            }
-         });
-      },500);
+      ajaxQueue.push({
+         url: 'http://localhost:8080/currentlytrading',
+         success: function(data) {
+            getIndex(data, function(scores, epicsMap){
+               for (epic in scores) {
+                  epicsMap[epic].index = scores[epic].index;
+                  epicsMap[epic].sentiment = scores[epic].sentiment;
+               }
+               initChart(processData(epicsMap, 'index'), '#currently_trading', 'My Currently Trading Markets')
+            })
+         }
+      });
 
+      setInterval(function(){
+         if (ajaxQueue.length) {
+            $.ajax(ajaxQueue.shift());
+         }
+      },500);
 
    }
 
    startCalls();
+
    setTimeout(function(){
       startCalls();
    }, 10000);
@@ -86,15 +93,13 @@ function render() {
          epicsMap[market.epic] = market;
       });
 
-      setTimeout(function(){
-         $.ajax({
-            type: 'GET',
-            url: 'http://localhost:8080/everything/sentiment/' + epics,
-            success: function(scores) {
-               callback(scores, epicsMap);
-            }
-         });
-      }, 500);
+      ajaxQueue.push({
+         type: 'GET',
+         url: 'http://localhost:8080/everything/sentiment/' + epics,
+         success: function(scores) {
+            callback(scores, epicsMap);
+         }
+      });
 
    }
 
