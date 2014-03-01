@@ -35,6 +35,9 @@ module.exports = function(client, log, watchlists, history, related) {
          cbTotal = 1,
          cbCurrent = 0;
 
+      // API key allowance errors so only use first one
+      searchEpics = [searchEpics[0]];
+
       for (i = 0; i < searchEpics.length; i++) {
 
          epic = searchEpics[i];
