@@ -38,6 +38,10 @@ function init() {
 
    $('#login').show();
    $('#interface').hide();
+   $('#twitter').hide();
+   $('#sentiment').hide();
+   $('#volatility').hide();
+   $('#movement').hide();
 }
 $(document).ready(init);
 
@@ -155,19 +159,8 @@ function initChart(data, selector, title) {
                      var d = data.filter(function(market){
                         return market.epic == this.epic
                      }.bind(this))[0];
-                     if (d.twitter) {
-                        updateTwitterUi({
-                           index: d.twitter.index,
-                           count: d.twitter.count,
-                           tweets: d.twitter.tweets
-                        });
-                     }
-                     updateSentimentUi({
-                        index: 2.4,
-                        longPositionPercentage: 38,
-                        marketId: "EURGBP",
-                        shortPositionPercentage: 62
-                     });
+                     updateTwitterUi(d.twitter);
+                     updateSentimentUi(d.sentiment);
                   }
                }
             }
@@ -217,6 +210,12 @@ function render() {
 }
 
 function updateTwitterUi(data) {
+
+   if (!data) {
+      $('#twitter').hide();
+      return;
+   }
+   $('.twitter').show();
    $('.twitter-index').html(data.index.toFixed(1));
    $('.twitter-count').html(data.count);
    $('.twitter-tweets').empty();
@@ -226,6 +225,12 @@ function updateTwitterUi(data) {
 }
 
 function updateSentimentUi(data) {
+
+   if (!data) {
+      $('#sentiment').hide();
+      return;
+   }
+   $('#sentiment').show();
    $('.sentiment-index').html(data.index.toFixed(1));
    $('.sentiment-dir').html(data.longPositionPercentage >= 50 ? 'long' : 'short');
    $('.sentiment-pie').highcharts({
