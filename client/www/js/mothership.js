@@ -37,32 +37,43 @@ function render() {
    $('#interface').show();
 
    $.ajax({
-      url: 'http://localhost:8080/positions',
+      url: 'http://localhost:8080/currentlytrading',
       success: function(data) {
-         initChart(processData(data, 'quantity'))
+         initChart(processData(data, 'quantity'), '#currently_trading', 'My Currently Trading Markets')
+      }
+   });
+
+   $.ajax({
+      url: 'http://localhost:8080/suggestedmarkets',
+      success: function(data) {
+         initChart(processData(data), '#suggested_markets', 'Markets from my watchlists and recent history')
       }
    });
 
    function processData(data, key) {
       data.forEach(function(position){
-         position.y = (position[key]/10)*100;
+         if (key) {
+            position.y = (position[key]/10)*100;
+         } else {
+            position.y = (data.length/10)*100;
+         }
       });
       return data;
    }
 
-   function initChart(data) {
+   function initChart(data, selector, title) {
 
-      $('#currently_trading').highcharts({
+      $(selector).highcharts({
          chart: {
             plotBackgroundColor: null,
             plotBorderWidth: null,
             plotShadow: false
          },
          title: {
-            text: 'Markets in my Open Positions'
+            text: title
          },
          tooltip: {
-            pointFormat: '{series.name}: <b>{point.y.f}%</b>'
+            pointFormat: '<b>{point.y:.f}%</b>'
          },
          plotOptions: {
             pie: {
@@ -72,7 +83,7 @@ function render() {
                   enabled: true,
                   color: '#000000',
                   connectorColor: '#000000',
-                  format: '<b>{point.name}</b>:{point.epic} {point.y:.1f} %'
+                  format: '<b>{point.name}</b> {point.y:.1f} %'
                }
             }
          },
