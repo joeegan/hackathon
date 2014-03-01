@@ -35,6 +35,9 @@ function render() {
 
    $('#login').hide();
    $('#interface').show();
+   $('#feeds').on('click', 'input', function() {
+       alert('filterme:' + this.value);
+   });
 
    $.ajax({
       url: 'http://localhost:8080/currentlytrading',
