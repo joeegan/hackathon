@@ -42,3 +42,8 @@ footer p {
 	margin: 0 auto;
 	width: 96em;
 }
+#currently_trading {
+	min-width: 310px;
+	height: 400px;
+	margin: 0 auto;
+}
