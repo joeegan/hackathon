@@ -39,25 +39,36 @@ function render() {
        alert('filterme:' + this.value);
    });
 
-   $.ajax({
-      url: 'http://localhost:8080/currentlytrading',
-      success: function(data) {
-         getIndex(data, function(scores, epicsMap){
-            for (epic in scores) {
-               epicsMap[epic].index = scores[epic].index;
-               epicsMap[epic].sentiment = scores[epic].sentiment;
-            }
-            initChart(processData(epicsMap, 'index'), '#currently_trading', 'My Currently Trading Markets')
-         })
-      }
-   });
+//   setInterval(function(){
 
-//   $.ajax({
-//      url: 'http://localhost:8080/suggestedmarkets',
-//      success: function(data) {
-//         initChart(processData(data), '#suggested_markets', 'Markets from my watchlists and recent history')
-//      }
-//   });
+      $.ajax({
+         url: 'http://localhost:8080/currentlytrading',
+         success: function(data) {
+            getIndex(data, function(scores, epicsMap){
+               for (epic in scores) {
+                  epicsMap[epic].index = scores[epic].index;
+                  epicsMap[epic].sentiment = scores[epic].sentiment;
+               }
+               initChart(processData(epicsMap, 'index'), '#currently_trading', 'My Currently Trading Markets')
+            })
+         }
+      });
+
+      $.ajax({
+         url: 'http://localhost:8080/suggestedmarkets',
+         success: function(data) {
+            getIndex(data, function(scores, epicsMap){
+               for (epic in scores) {
+                  epicsMap[epic].index = scores[epic].index;
+                  epicsMap[epic].sentiment = scores[epic].sentiment;
+               }
+               initChart(processData(epicsMap, 'index'), '#suggested_markets', 'Markets from my watchlists and recent history')
+            })
+         }
+      });
+
+//   }, 2000);
+
 
    function getIndex(data, callback){
       var epics = data.map(function(market){
@@ -70,7 +81,7 @@ function render() {
 
       $.ajax({
          type: 'GET',
-         url: 'http://localhost:8080/everything/sentiment,twitter,volatility/' + epics,
+         url: 'http://localhost:8080/everything/sentiment/' + epics,
          success: function(scores) {
             callback(scores, epicsMap);
          }
