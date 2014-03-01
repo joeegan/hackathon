@@ -2,7 +2,7 @@
  * Returns the unique markets that the user has previously traded on or has in a custom watchlist.
  */
 
-module.exports = function(client, log, watchlists, history) {
+module.exports = function(client, log, watchlists, history, related) {
 
    function compute(req, res, next, callback) {
       var data = [],
@@ -19,10 +19,42 @@ module.exports = function(client, log, watchlists, history) {
                   data.push(historyMarkets[i]);
                }
             }
-            callback(data);
+            related(data, epics, callback);
          });
 
       });
+   }
+
+   function related(data, epics, callback) {
+
+      var epic,
+         i,
+         cbTotal = 1,
+         cbCurrent = 0;
+
+      for (i = 0; i < epics.length; i++) {
+
+         epic = epics[i];
+         cbTotal++;
+         related.compute(req, res, next, epic, function(relatedMarkets) {
+            for (var i=0; i < relatedMarkets.length; i++) {
+               if (epics.indexOf(relatedMarkets[i].epic) == -1) {
+                  data.push(relatedMarkets[i]);
+               }
+            }
+            cbCurrent++;
+            if (cbCurrent == cbTotal) {
+               callback(data);
+            }
+         });
+      }
+
+      (function finalise() {
+         cbCurrent++;
+         if (cbCurrent == cbTotal) {
+            callback(data);
+         }
+      })();
    }
 
    return {
