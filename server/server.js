@@ -11,8 +11,8 @@ var restify = require('restify'),
    volatility = require('./volatility')(client, log),
    movement = require('./movement')(client, log),
    markets = require('./markets')(client, log),
-   positions = require('./positions'),
-   workingorders = require('./workingorders'),
+   positions = require('./positions')(client, log),
+   workingorders = require('./workingorders')(client, log),
    currentlytrading = require('./currentlytrading')(client, log),
    history = require('./history'),
    everything = require('./everything'),
@@ -39,10 +39,10 @@ currentlytrading.serve(server);
 
 
 markets.serve(server);
-positions(server, client, log);
+positions.serve(server);
 history(server, client, log);
 twitter(server, client, log);
-workingorders(server, client, log);
+workingorders.serve(server);
 
 
 everything(server, client, log);
