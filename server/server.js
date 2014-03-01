@@ -30,7 +30,7 @@ server.use(restify.gzipResponse());
 server.listen(8080);
 
 login(server, client, log);
-sentiment.serve(server, client, log);
+sentiment(server, client, log);
 positions(server, client, log);
 volatility(server, client, log);
 movement(server, client, log);
