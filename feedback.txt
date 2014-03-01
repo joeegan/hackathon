@@ -16,3 +16,5 @@ When I retrieve: /workingorders
 I get an object wrapped in a needless property called 'workingOrders'. I would just like the array inside.
 
 You can get the market id from an epic, but can't get all epics related to a market id.
+
+Add the ticker name to any returned instruments. Very useful for Twitter cashtag creation, and any finance related API integration.

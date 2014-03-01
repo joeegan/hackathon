@@ -11,11 +11,12 @@ var restify = require('restify'),
    related = require('./related')(client, log),
    volatility = require('./volatility')(client, log),
    movement = require('./movement')(client, log),
-   markets = require('./markets')(client, log),
+   watchlists = require('./watchlists')(client, log),
    positions = require('./positions')(client, log),
+   history = require('./history')(client, log),
    workingorders = require('./workingorders')(client, log),
    currentlytrading = require('./currentlytrading')(client, log, workingorders, positions),
-   history = require('./history')(client, log),
+   suggestedmarkets = require('./suggestedmarkets')(client, log, watchlists, history),
    everything = require('./everything'),
    twitter = require('./twitter')(client, log);
 
@@ -39,9 +40,10 @@ volatility.serve(server);
 movement.serve(server);
 currentlytrading.serve(server);
 twitter.serve(server);
-markets.serve(server);
+watchlists.serve(server);
 positions.serve(server);
 history.serve(server);
 workingorders.serve(server);
+suggestedmarkets.serve(server);
 
 everything(server, client, log);
