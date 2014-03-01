@@ -14,7 +14,7 @@ var restify = require('restify'),
    positions = require('./positions')(client, log),
    workingorders = require('./workingorders')(client, log),
    currentlytrading = require('./currentlytrading')(client, log),
-   history = require('./history'),
+   history = require('./history')(client, log),
    everything = require('./everything'),
    twitter = require('./twitter')(client, log);
 
@@ -40,7 +40,7 @@ twitter.serve(server);
 
 markets.serve(server);
 positions.serve(server);
-history(server, client, log);
+history.serve(server);
 workingorders.serve(server);
 
 everything(server, client, log);
