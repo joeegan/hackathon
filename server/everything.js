@@ -9,11 +9,9 @@ module.exports = function(server, client, log) {
 
       var indexes = req.params[0].split(','),
           epics = req.params[1].split(','),
-          epic,
           results = {},
           cbTotal = 1,
-          cbCurrent = 0,
-          i;
+          cbCurrent = 0;
 
       function finito() {
 
@@ -33,12 +31,14 @@ module.exports = function(server, client, log) {
          return next();
       }
 
+
       function compute(fn, name) {
+
          var i;
+
          for (i = 0; i < epics.length; i++) {
-            epic = epics[i];
             cbTotal++;
-            fn.compute(req, res, next, epic, function(data) {
+            fn.compute(req, res, next, epics[i], function(epic, data) {
                if (!results.hasOwnProperty(epic)) {
                   results[epic] = {};
                }
@@ -47,7 +47,7 @@ module.exports = function(server, client, log) {
                if (cbCurrent == cbTotal) {
                   finito();
                }
-            });
+            }.bind(null, epics[i]));
          }
       }
 

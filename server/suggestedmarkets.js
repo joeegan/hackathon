@@ -30,7 +30,6 @@ module.exports = function(client, log, watchlists, history, related) {
    function computeRelated(req, res, next, data, epics, callback) {
 
       var searchEpics = epics.slice(),
-         epic,
          i,
          cbTotal = 1,
          cbCurrent = 0;
@@ -40,9 +39,8 @@ module.exports = function(client, log, watchlists, history, related) {
 
       for (i = 0; i < searchEpics.length; i++) {
 
-         epic = searchEpics[i];
          cbTotal++;
-         related.compute(req, res, next, epic, function(relatedMarkets) {
+         related.compute(req, res, next, searchEpics[i], function(relatedMarkets) {
 
             for (var i=0; i < relatedMarkets.length; i++) {
                if (epics.indexOf(relatedMarkets[i].epic) == -1) {
