@@ -39,26 +39,54 @@ function render() {
    $.ajax({
       url: 'http://localhost:8080/currentlytrading',
       success: function(data) {
-         initChart(processData(data, 'quantity'), '#currently_trading', 'My Currently Trading Markets')
+         getIndex(data, function(scores, epicsMap){
+            for (epic in scores) {
+               epicsMap[epic].index = scores[epic].index;
+               epicsMap[epic].sentiment = scores[epic].sentiment;
+            }
+            initChart(processData(epicsMap, 'index'), '#currently_trading', 'My Currently Trading Markets')
+         })
       }
    });
 
-   $.ajax({
-      url: 'http://localhost:8080/suggestedmarkets',
-      success: function(data) {
-         initChart(processData(data), '#suggested_markets', 'Markets from my watchlists and recent history')
-      }
-   });
+//   $.ajax({
+//      url: 'http://localhost:8080/suggestedmarkets',
+//      success: function(data) {
+//         initChart(processData(data), '#suggested_markets', 'Markets from my watchlists and recent history')
+//      }
+//   });
 
-   function processData(data, key) {
-      data.forEach(function(position){
-         if (key) {
-            position.y = (position[key]/10)*100;
-         } else {
-            position.y = (data.length/10)*100;
+   function getIndex(data, callback){
+      var epics = data.map(function(market){
+         return market.epic;
+      }).join(',');
+      var epicsMap = {};
+      data.forEach(function(market){
+         epicsMap[market.epic] = market;
+      });
+
+      $.ajax({
+         type: 'GET',
+         url: 'http://localhost:8080/everything/sentiment,twitter,volatility/' + epics,
+         success: function(scores) {
+            callback(scores, epicsMap);
          }
       });
-      return data;
+   }
+
+   function processData(data, key) {
+      var total = 0;
+      for (market in data) {
+            var score = data[market][key];
+            total += score;
+      }
+      for (market in data) {
+         var score = data[market][key];
+         data[market].y = (score/total) * 100;
+      }
+      return $.map(data, function(item) {
+         return [item];
+      });
    }
 
    function initChart(data, selector, title) {
