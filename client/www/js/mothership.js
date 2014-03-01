@@ -53,7 +53,7 @@ function getMarketData(){
 
          $.ajax({
             url: 'http://localhost:8080/currentlytrading'
-         }).done(function() {
+         }).done(function(data) {
                currentlyTradingEpics = data.map(function(market){
                   return market.epic;
                }).join(',');
@@ -63,8 +63,8 @@ function getMarketData(){
                   return map;
                }, {});
 
-               currentlyTradingPoller = pollService.bind(null, currentlyTradingEpics, currentlyTradingEpicsMap, '#currently_trading', 'My Currently Trading Markets');
-               suggestMarketPoller = pollService.bind(null, suggestMarketsEpics, suggestMarketsEpicsMap, '#suggested_markets', 'Markets from my watchlists and recent history', function() {
+               currentlyTradingPoller = pollService.bind(null, currentlyTradingEpics, currentlyTradingEpicsMap, '#currently_trading', 'Currently traded markets');
+               suggestMarketPoller = pollService.bind(null, suggestMarketsEpics, suggestMarketsEpicsMap, '#suggested_markets', 'Suggested and recently traded markets', function() {
                   currentlyTradingTimeout = setTimeout(function() {
                      currentlyTradingPoller();
                   }, 1000);
