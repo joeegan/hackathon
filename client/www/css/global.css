@@ -86,6 +86,12 @@ input[type=text] {
     margin: 0 0 10px 0;
 }
 
+table {
+   width: 200px;
+   font-size: 12px;
+}
+
+#feeds label {
 #interface label {
     font-size: 1.8em;
 }

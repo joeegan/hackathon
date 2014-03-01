@@ -1,5 +1,5 @@
 var SERVER_URL = "http://localhost:8080",
-   CLIENT_URL = "http://localhost:8000",
+   CLIENT_URL = "http://localhost:8888",
    CST,
    TIMEOUT = 60000,
    START_TIMEOUT = 1000,
@@ -43,13 +43,13 @@ $(document).ready(init);
 
 function getMarketData(){
    $.ajax({
-      url: 'http://localhost:8080/suggestedmarkets',
-   }).done(function(sdata) {
-         suggestMarketsEpics = sdata.map(function(market){
+      url: 'http://localhost:8080/suggestedmarkets'
+   }).done(function(data) {
+         suggestMarketsEpics = data.map(function(market){
             return market.epic;
          }).join(',');
 
-         suggestMarketsEpicsMap = sdata.reduce(function(map, market){
+         suggestMarketsEpicsMap = data.reduce(function(map, market){
             map[market.epic] = market;
             return map;
          }, {});
@@ -66,12 +66,12 @@ function getMarketData(){
                   return map;
                }, {});
 
-               currentlyTradingPoller = pollService.bind(null, currentlyTradingEpics, currentlyTradingEpicsMap, '#currently_trading', 'My Currently Trading Markets', function() {
+               currentlyTradingPoller = pollService.bind(null, currentlyTradingEpics, currentlyTradingEpicsMap, '#currently_trading', 'Currently traded markets', function() {
                  /* suggestMarketTimeout = setTimeout(function() {
                      suggestMarketPoller();
                   }, TIMEOUT);    */
                });
-               suggestMarketPoller = pollService.bind(null, suggestMarketsEpics, suggestMarketsEpicsMap, '#suggested_markets', 'Markets from my watchlists and recent history', function() {
+               suggestMarketPoller = pollService.bind(null, suggestMarketsEpics, suggestMarketsEpicsMap, '#suggested_markets', 'Suggested and recently traded markets', function() {
                   currentlyTradingTimeout = setTimeout(function() {
                      currentlyTradingPoller();
                      firstLoad = false;
@@ -97,14 +97,9 @@ function pollService(epics, epicMap, elementId, title, callback) {
             callback(scores, epicMap);
          }
          initChart(processData(epicMap, 'index'), elementId, title);
-      },
-      error: function() {
-         clearTimeout(suggestMarketTimeout);
-         clearTimeout(currentlyTradingTimeout);
-         clearTimeout(errorTimeout);
-         errorTimeout = setTimeout(function() {
+         /*suggestMarketTimeout = setTimeout(function() {
             pollService.apply(null, args);
-         }, TIMEOUT);
+         }, 10000);*/
       }
    });
 }
@@ -139,7 +134,7 @@ function initChart(data, selector, title) {
          pointFormat: '<b>{point.y:.f}%</b>'
       },
       plotOptions: {
-         pie: {
+         series: {
             animation: false,
             allowPointSelect: true,
             cursor: 'pointer',
@@ -148,6 +143,22 @@ function initChart(data, selector, title) {
                color: '#000000',
                connectorColor: '#000000',
                format: '<b>{point.name}</b> {point.y:.1f} %'
+            },
+            point: {
+               events: {
+                  mouseOver: function() {
+                     console.log(data);
+                     var d = data.reduce(function(market){
+                        return market.epic == this.epic
+                     });
+                     console.log(d);
+                     updateTwitterUi({
+                        count: Math.random(),
+                        index: 1,
+                        tweets: ["RT @ForexStopHunter: RT @Nouf_wpt: $FTSE Banks are struggling, banks are not in a bull market http://t.co/FW8tUeNapY Hi Nouf Russell IWM St…", "RT @Swedishbearmark: Finally a good moment to use this picture:↵ $SPX $SPY $NDX $OMX $FTSE $DAX #putin #bearmarket #russia #ukraine http://…"]
+                     });
+                  }
+               }
             }
          }
       },
@@ -192,4 +203,13 @@ function render() {
        }
    });
    getMarketData();
+}
+
+function updateTwitterUi(data) {
+   $('.twitter-count').html(data.count);
+   $('.twitter-index').html(data.index.toFixed(1));
+   $('.twitter-tweets').empty();
+   data.tweets.forEach(function(tweet) {
+      $('.twitter-tweets').append('<td>' + tweet + '</td>');
+   });
 }

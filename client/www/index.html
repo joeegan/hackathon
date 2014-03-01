@@ -20,7 +20,7 @@
          <form action="index.html" method="post" id="form">
             <input type="text" name="identifier" value="SelTESTigm2602PqK" placeholder="Identifier" id="identifier"><br>
             <input type="password" name="password" value="112233" placeholder="Password" id="password"><br>
-            <button type="submit" id="login">Login</button>
+            <button type="submit" id="login_button">Login</button>
          <form>
       </section>
       <section id="interface">
@@ -33,6 +33,19 @@
             <label><input type="checkbox" value="volatility" />volatility</label>
             <label><input type="checkbox" value="twitter" />twitter</label>
          </div>
+         <table>
+            <tr>
+               <td><b>Amount of tweets</b>:</td>
+               <td class=twitter-count></td>
+            </tr>
+            <tr>
+               <td><b>Score out of 10</b>:</td>
+               <td class=twitter-index></td>
+            </tr>
+            <tr class=twitter-tweets>
+            </tr>
+            </tr>
+         </table>
          <br>
          <label><input id="streaming"  type="checkbox" value="twitter" />live streaming</label>
       </section>
