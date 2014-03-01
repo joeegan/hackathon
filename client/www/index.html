@@ -10,12 +10,16 @@
    <script src="/js/mothership.js"></script>
 </head>
 <body>
+   <header id="page_header">
+      <img src="css/img/logo.png" alt="IG" />
+      <h1>Interesting Markets</h1>
+   </header>
    <div id="wrapper">
       <section id="login">
-         <h1>Login</h1>
+         <h2>Login</h2>
          <form action="index.html" method="post" id="form">
-            <input type="text" name="identifier" value="SelTESTigm2602PqK" placeholder="Identifier" id="identifier">
-            <input type="password" name="password" value="112233" placeholder="Password" id="password">
+            <input type="text" name="identifier" value="SelTESTigm2602PqK" placeholder="Identifier" id="identifier"><br>
+            <input type="password" name="password" value="112233" placeholder="Password" id="password"><br>
             <button type="submit" id="login">Login</button>
          <form>
       </section>
@@ -23,7 +27,7 @@
          <div id="currently_trading"></div>
          <div id="suggested_markets"></div>
       </section>
-       <footer>
+       <footer id="page_footer">
            <p>&copy; The Hive Mind.</p>
        </footer>
    </div>

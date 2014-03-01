@@ -1,5 +1,5 @@
 body {
-	background: #ffffff;
+	background: #b01018;
 	font-family: 'Arial', sans-serif;
 }
 h1, h2 {
@@ -22,10 +22,9 @@ header {
 header h1, header h2 {
 	float: left;
 }
-header h2 {
-	color: #555;
+h2 {
+	color: #572d2d;
 	font-size: 3em;
-	margin: 1.6em 0 0 1em;
 }
 section {
 	overflow: hidden;
@@ -38,12 +37,52 @@ footer p {
 	text-align: center;
 	color: #bbbbbb;
 }
+#page_header {
+    background: #222;
+    color: #fff;
+    padding: 5px;
+}
+#page_header h1 {
+    padding-top: 13px;
+    margin: 0;
+}
+#page_header img {
+    float: left;
+    padding-right: 5px;
+}
 #wrapper {
-	margin: 0 auto;
-	width: 96em;
+	margin: 30px auto;
+    background: #fff;
+    width: 90%;
+    padding: 10px;
 }
 #currently_trading {
 	min-width: 310px;
 	height: 400px;
 	margin: 20px auto 40px;
+}
+#page_footer {
+    line-height: 1em;
+}
+
+button {
+    border: none;
+    background: none;
+    background-color: #78b23f;
+    padding: 8px 20px;
+    font-size: 16px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #608e32;
+}
+input[type=password],
+input[type=text] {
+    border: 2px solid rgba(0,0,0,0.2);
+    padding: 10px;
+    background: #fff;
+    margin: 0 0 10px 0;
 }
