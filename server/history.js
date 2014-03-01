@@ -11,7 +11,6 @@ module.exports = function(client, log) {
          res.send(result.activities.sort(function(a, b) {
                return a.activityHistoryId < b.activityHistoryId;
          }).map(function(order){
-               console.log(order);
             if (epics.indexOf(order.epic) == -1) {
                epics.push(order.epic);
                order = { epic: order.epic, name: order.marketName };
