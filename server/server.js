@@ -6,7 +6,7 @@ var restify = require('restify'),
       log: log
    }),
    client = require('./client')(log),
-   login = require('./login'),
+   login = require('./login')(client, log),
    sentiment = require('./sentiment')(client, log),
    volatility = require('./volatility')(client, log),
    movement = require('./movement')(client, log),
@@ -16,7 +16,7 @@ var restify = require('restify'),
    currentlytrading = require('./currentlytrading')(client, log),
    history = require('./history'),
    everything = require('./everything'),
-   twitter = require('./twitter');
+   twitter = require('./twitter')(client, log);
 
 restify.CORS.ALLOW_HEADERS.push('x-security-token');
 restify.CORS.ALLOW_HEADERS.push('cst');
@@ -31,18 +31,16 @@ server.use(restify.bodyParser());
 server.use(restify.gzipResponse());
 server.listen(8080);
 
-login(server, client, log);
+login.serve(server);
 sentiment.serve(server);
 volatility.serve(server);
 movement.serve(server);
 currentlytrading.serve(server);
-
+twitter.serve(server);
 
 markets.serve(server);
 positions.serve(server);
 history(server, client, log);
-twitter(server, client, log);
 workingorders.serve(server);
-
 
 everything(server, client, log);

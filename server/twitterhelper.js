@@ -14,7 +14,7 @@ TwitterAPI.prototype.search = function(q, params, callback) {
    }
 
    var url = 'https://api.twitter.com/1.1/search/tweets.json';
-   params = utils.merge(params, {q:q});
+   params.q = q;
    this.get(url, params, callback);
    return this;
 };
