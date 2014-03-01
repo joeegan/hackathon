@@ -217,7 +217,7 @@ function updateTwitterUi(data) {
       $('#twitter').hide();
       return;
    }
-   $('.twitter').show();
+   $('#twitter').show();
    $('.twitter-index').html(data.index.toFixed(1));
    $('.twitter-count').html(data.count);
    $('.twitter-tweets').empty();
