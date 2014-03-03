@@ -6,7 +6,7 @@ module.exports = function(client, log) {
 
    function compute(req, res, next, callback) {
 
-      client.get('/history/activity/1000000000', function(result) {
+      client.get('/history/activity/1000000000000', function(result) {
          var epics = [];
          callback(result.activities.sort(function(a, b) {
                return a.activityHistoryId < b.activityHistoryId;
@@ -16,7 +16,7 @@ module.exports = function(client, log) {
                order = { epic: order.epic, name: order.marketName };
                return order;
             }
-         }).filter(function(order){ return !!order; }));
+         }).filter(function(order){ return !!order; }).slice(0,10));
       }, req);
    }
 

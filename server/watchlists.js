@@ -4,7 +4,7 @@ module.exports = function(client, log) {
 
    function compute(req, res, next, callback) {
       watchlistHelper.getMarkets(req).then(function(markets) {
-         callback(markets);
+         callback(markets.slice(0,10));
       });
    }
 

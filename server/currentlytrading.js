@@ -25,9 +25,7 @@ module.exports = function(client, log, workingorders, currentpositions) {
                   data.push(positions[i]);
                }
             }
-            callback(data.sort(function(a,b) {
-               return a.quantity < b.quantity;
-            }).slice(0,7));
+            callback(data);
          });
       });
    }

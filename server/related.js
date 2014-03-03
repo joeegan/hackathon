@@ -25,12 +25,9 @@ module.exports = function(client, log) {
 
          var finalMarkets = [],
             mktEpic,
-            marketMap = {},
-            filteredMarkets;
+            marketMap = {};
 
-         filteredMarkets = allMarkets.filter(function(item) {
-            return item.instrumentType == 'CURRENCIES' || item.instrumentType == 'INDICES';
-         }).forEach(function(item) {
+         allMarkets.forEach(function(item) {
             marketMap[item.epic] = item.instrumentName;
          });
 
@@ -41,7 +38,7 @@ module.exports = function(client, log) {
             });
          }
 
-         callback(finalMarkets);
+         callback(finalMarkets.slice(0,10));
       }
 
       loadMarketId(function(marketId) {
@@ -53,30 +50,26 @@ module.exports = function(client, log) {
 
             var marketIds = result.clientSentiments.map(function(item) { return item.marketId; });
 
-            loadMarkets(marketIds[Math.floor(Math.random()*marketIds.length)], function(markets) {
-               allMarkets = allMarkets.concat(markets);
-               loadMarkets(marketIds[Math.floor(Math.random()*marketIds.length)], function(markets) {
-                  allMarkets = allMarkets.concat(markets);
-                  finito();
+            if (marketIds.length > 0) {
+               loadMarkets(marketIds[0], function(markets) {
+                  allMarkets = allMarkets.concat(markets.filter(function(item) {
+                     return item.instrumentType == 'CURRENCIES' || item.instrumentType == 'INDICES';
+                  }).slice(0,1));
+                  if (marketIds.length > 1) {
+                     loadMarkets(marketIds[1], function(markets) {
+                        allMarkets = allMarkets.concat(markets.filter(function(item) {
+                           return item.instrumentType == 'CURRENCIES' || item.instrumentType == 'INDICES';
+                        }).slice(0,1));
+                        finito();
+                     });
+                  } else {
+                     finito();
+                  }
                });
-            });
+            }
 
          }, req);
       })
-   }
-
-   function computeRelated(req, res, next, data, epics, epic, callback) {
-
-      related.compute(req, res, next, epic, function(relatedMarkets) {
-
-         for (var i=0; i < relatedMarkets.length; i++) {
-            if (epics.indexOf(relatedMarkets[i].epic) == -1) {
-               epics.push(relatedMarkets[i].epic);
-               data.push(relatedMarkets[i]);
-            }
-         }
-         callback(epics, data);
-      });
    }
 
    return {

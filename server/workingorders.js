@@ -12,12 +12,12 @@ module.exports = function(client, log) {
                epic: epic,
                name: order.marketData.instrumentName,
                quantity: quantity
-            }
+            };
          }).sort(function(a,b) {
-               return a.quantity < b.quantity;
-            }).filter(function(item,idx,arr) {
-               return arr.map(function(item){ return item.epic}).indexOf(item.epic) >= idx;
-            }));
+            return a.quantity < b.quantity;
+         }).filter(function(item,idx,arr) {
+            return arr.map(function(item){ return item.epic}).indexOf(item.epic) >= idx;
+         }).slice(0,10));
       }, req);
    }
 
