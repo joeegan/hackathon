@@ -15,55 +15,37 @@ module.exports = function(client, log, watchlists, history, related) {
          }
 
          history.compute(req, res, next, function(historyMarkets) {
-            var randomEpics = [];
             for (var i=0; i < historyMarkets.length; i++) {
                if (epics.indexOf(historyMarkets[i].epic) == -1) {
                   epics.push(historyMarkets[i].epic);
                   data.push(historyMarkets[i]);
                }
             }
-            // in addition, two related markets
-            randoms.push(data[Math.floor(Math.random()*data.length)]);
-            randoms.push(data[Math.floor(Math.random()*data.length)]);
-            computeRelated(req, res, next, data, randomEpics, callback);
+
+            computeRelated(req, res, next, data, data[Math.floor(Math.random()*data.length)], epics, function(epics, data) {
+
+               computeRelated(req, res, next, data, data[Math.floor(Math.random()*data.length)], epics, function(epics, data) {
+                  
+                  callback(shuffle(data).slice(0,7));
+               });
+            });
          });
 
       });
    }
 
-   function computeRelated(req, res, next, data, epics, callback) {
+   function computeRelated(req, res, next, data, epics, epic, callback) {
 
-      var searchEpics = epics.slice(),
-         i,
-         cbTotal = 1,
-         cbCurrent = 0;
+      related.compute(req, res, next, epic, function(relatedMarkets) {
 
-      searchEpics = [searchEpics[0]];
-
-      for (i = 0; i < searchEpics.length; i++) {
-
-         cbTotal++;
-         related.compute(req, res, next, searchEpics[i], function(relatedMarkets) {
-
-            for (var i=0; i < relatedMarkets.length; i++) {
-               if (epics.indexOf(relatedMarkets[i].epic) == -1) {
-                  epics.push(relatedMarkets[i].epic);
-                  data.push(relatedMarkets[i]);
-               }
+         for (var i=0; i < relatedMarkets.length; i++) {
+            if (epics.indexOf(relatedMarkets[i].epic) == -1) {
+               epics.push(relatedMarkets[i].epic);
+               data.push(relatedMarkets[i]);
             }
-            cbCurrent++;
-            if (cbCurrent == cbTotal) {
-               callback(shuffle(data).slice(0,7));
-            }
-         });
-      }
-
-      (function finalise() {
-         cbCurrent++;
-         if (cbCurrent == cbTotal) {
-            callback(shuffle(data).slice(0,7));
          }
-      })();
+         callback(epics, data);
+      });
    }
 
    function shuffle(o){
