@@ -51,30 +51,32 @@ module.exports = function(client, log) {
                return next();
             }
 
-            var marketIds = result.clientSentiments.map(function(item) { return item.marketId; }),
-               cbTotal = 1,
-               cbCurrent = 0;
+            var marketIds = result.clientSentiments.map(function(item) { return item.marketId; });
 
-            marketIds.forEach(function(mid) {
-               cbTotal++;
-               loadMarkets(mid, function(markets) {
+            loadMarkets(marketIds[Math.floor(Math.random()*marketIds.length)], function(markets) {
+               allMarkets = allMarkets.concat(markets);
+               loadMarkets(marketIds[Math.floor(Math.random()*marketIds.length)], function(markets) {
                   allMarkets = allMarkets.concat(markets);
-                  cbCurrent++;
-                  if (cbCurrent == cbTotal) {
-                     finito();
-                  }
+                  finito();
                });
             });
 
-            (function finalise() {
-               cbCurrent++;
-               if (cbCurrent == cbTotal) {
-                  finito();
-               }
-            })();
-
          }, req);
       })
+   }
+
+   function computeRelated(req, res, next, data, epics, epic, callback) {
+
+      related.compute(req, res, next, epic, function(relatedMarkets) {
+
+         for (var i=0; i < relatedMarkets.length; i++) {
+            if (epics.indexOf(relatedMarkets[i].epic) == -1) {
+               epics.push(relatedMarkets[i].epic);
+               data.push(relatedMarkets[i]);
+            }
+         }
+         callback(epics, data);
+      });
    }
 
    return {
