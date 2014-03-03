@@ -15,15 +15,17 @@ module.exports = function(client, log, watchlists, history, related) {
          }
 
          history.compute(req, res, next, function(historyMarkets) {
+            var randomEpics = [];
             for (var i=0; i < historyMarkets.length; i++) {
                if (epics.indexOf(historyMarkets[i].epic) == -1) {
                   epics.push(historyMarkets[i].epic);
                   data.push(historyMarkets[i]);
                }
             }
-            callback(data.slice(0,7));
-            // API key allowance errors so dont do this any more
-            //computeRelated(req, res, next, data, epics, callback);
+            // in addition, two related markets
+            randoms.push(data[Math.floor(Math.random()*data.length)]);
+            randoms.push(data[Math.floor(Math.random()*data.length)]);
+            computeRelated(req, res, next, data, randomEpics, callback);
          });
 
       });
@@ -51,7 +53,7 @@ module.exports = function(client, log, watchlists, history, related) {
             }
             cbCurrent++;
             if (cbCurrent == cbTotal) {
-               callback(data);
+               callback(shuffle(data).slice(0,7));
             }
          });
       }
@@ -59,9 +61,14 @@ module.exports = function(client, log, watchlists, history, related) {
       (function finalise() {
          cbCurrent++;
          if (cbCurrent == cbTotal) {
-            callback(data);
+            callback(shuffle(data).slice(0,7));
          }
       })();
+   }
+
+   function shuffle(o){
+      for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+      return o;
    }
 
    return {
