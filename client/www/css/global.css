@@ -1,59 +1,59 @@
 body {
-	font-family: 'Arial', sans-serif;
+	 font-family: 'Arial', sans-serif;
 }
 h1, h2 {
-	font-size: 2em;
-	font-family: 'Arial', sans-serif;
-	margin: 0.5em 0 0.25em 0;
+	 font-size: 2em;
+	 font-family: 'Arial', sans-serif;
+	 margin: 0.5em 0 0.25em 0;
 }
 p, li {
-	font-size: 1.8em;
-	line-height: 1.4em;
-	margin: 1em 0;
+	 font-size: 1.8em;
+	 line-height: 1.4em;
+	 margin: 1em 0;
 }
 legend {
-	font-size: 2em;
-	line-height: 1.4em;
+	 font-size: 2em;
+	 line-height: 1.4em;
 }
 header {
-	overflow: hidden;
+	 overflow: hidden;
 }
 header h1, header h2 {
-	float: left;
+	 float: left;
 }
 h2 {
-	color: #572d2d;
-	font-size: 3em;
+	 color: #572d2d;
+	 font-size: 3em;
 }
 section {
-	overflow: hidden;
+	 overflow: hidden;
 }
 footer {
-	padding: 1em;
+	 padding: 1em;
 }
 footer p {
-	font-size: 1em;
-	text-align: center;
-	color: #bbbbbb;
+	 font-size: 1em;
+	 text-align: center;
+	 color: #bbbbbb;
 }
 #page_header {
-    background: #222;
-    color: #fff;
-    padding: 5px;
+   background: #222;
+   color: #fff;
+   padding: 5px;
 }
 #page_header h1 {
-    padding-top: 13px;
-    margin: 0;
+   padding-top: 13px;
+   margin: 0;
 }
 #page_header img {
-    float: left;
-    padding-right: 5px;
+   float: left;
+   padding-right: 5px;
 }
 #wrapper {
-	margin: 30px auto;
-    background: #fff;
-    width: 90%;
-    padding: 10px;
+	 margin: 30px auto;
+   background: #fff;
+   width: 90%;
+   padding: 10px;
 }
 #suggested_markets, #currently_trading {
 	width: 50%;
@@ -61,18 +61,18 @@ footer p {
 	float: left;
 }
 #page_footer {
-    line-height: 1em;
+   line-height: 1em;
 }
 
 button {
-    border: none;
-    background: none;
-    background-color: #78b23f;
-    padding: 8px 20px;
-    font-size: 16px;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
+   border: none;
+   background: none;
+   background-color: #78b23f;
+   padding: 8px 20px;
+   font-size: 16px;
+   color: #fff;
+   font-size: 16px;
+   cursor: pointer;
 }
 
 button:hover {
@@ -80,10 +80,10 @@ button:hover {
 }
 input[type=password],
 input[type=text] {
-    border: 2px solid rgba(0,0,0,0.2);
-    padding: 10px;
-    background: #fff;
-    margin: 0 0 10px 0;
+   border: 2px solid rgba(0,0,0,0.2);
+   padding: 10px;
+   background: #fff;
+   margin: 0 0 10px 0;
 }
 
 table {
@@ -95,7 +95,7 @@ table {
    clear: both;
 }
 #interface label {
-    font-size: 1.8em;
+   font-size: 1.8em;
 }
 
 #feeds {
@@ -117,6 +117,9 @@ table {
    float: left;
    overflow: hidden;
 }
+#details #volatility, #details, #movement {
+  height: 100px;
+}
 .sentiment-pie {
-    height: 250px;
+   height: 250px;
 }

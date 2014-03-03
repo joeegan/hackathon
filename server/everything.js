@@ -52,8 +52,10 @@ module.exports = function(server, client, log) {
          var i;
 
          for (i = 0; i < epics.length; i++) {
-            cbTotal++;
-            setTimeout(doCompute(epics, i, fn, name, compute), cbTotal * 200);
+            if ((name != 'movement' && name != 'volatility') || i < 2) {
+               cbTotal++;
+               setTimeout(doCompute(epics, i, fn, name, compute), cbTotal * 200);
+            }
          }
       }
 

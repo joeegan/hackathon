@@ -101,6 +101,12 @@ function pollService(epics, epicMap, elementId, title, callback) {
             if (scores[epic].twitter) {
                epicMap[epic].twitter = scores[epic].twitter;
             }
+            if (scores[epic].volatility) {
+               epicMap[epic].volatility = scores[epic].volatility;
+            }
+            if (scores[epic].movement) {
+               epicMap[epic].movement = scores[epic].movement;
+            }
          }
          if (callback) {
             callback(scores, epicMap);
