@@ -1,5 +1,7 @@
 var SERVER_URL = "http://localhost:8080",
    CLIENT_URL = "http://localhost:8888",
+   ROUND_ROBIN_TIME = 1500,
+   BREAKDOWN_STREAMING_TIME = 2500,
    feeds = {
       sentiment: {
          url: SERVER_URL+'/sentiment/',
@@ -20,6 +22,7 @@ var SERVER_URL = "http://localhost:8080",
    },
    feedKeys = Object.keys(feeds),
    selectedFeeds = [],
+   displayedCharts = [],
    displayedMarket;
 
 function init() {
@@ -31,11 +34,6 @@ function init() {
       ev.preventDefault();
       data = $(this).serialize();
       $.post(SERVER_URL + '/login', data, function(details) {
-         if (details.errorCode) {
-            alert('Login failed');
-            console.log(details);
-            return;
-         }
          $.ajaxSetup({
             headers: {
                'X-SECURITY-TOKEN': details['X-SECURITY-TOKEN'],
@@ -81,6 +79,7 @@ function showInterface() {
    loadSuggestedMarkets(function(suggestedMarkets, tradingMarkets) {
       initChart(tradingMarkets, '#currently_trading', 'Currently traded markets');
       initChart(suggestedMarkets, '#suggested_markets', 'Suggested markets');
+      startBreakdownStreaming();
    });
 }
 
@@ -126,6 +125,10 @@ function initChart(data, selector, title) {
       chart : {
          events : {
             load : function() {
+               displayedCharts.push({
+                  chart: this.series[0],
+                  data: data
+               });
                selectFeeds(this.series[0], data);
                startRoundRobin(this.series[0], data);
             }
@@ -207,11 +210,58 @@ function startRoundRobin(chart, data) {
 
       }).always(function() {
 
-         setTimeout(frame, 1000);
+         setTimeout(frame, ROUND_ROBIN_TIME);
       });
    }
 
-   setTimeout(frame, 1000);
+   setTimeout(frame, ROUND_ROBIN_TIME);
+}
+
+function startBreakdownStreaming() {
+
+   var currentFeed = 0;
+
+   function frame() {
+
+      if (!displayedMarket || !$('#streaming').prop('checked')) {
+         setTimeout(frame, BREAKDOWN_STREAMING_TIME);
+         return;
+      }
+
+      var feedName = feedKeys[currentFeed],
+         feed = feeds[feedName],
+         currentMarkets,
+         currentMarketData,
+         i;
+
+      $.ajax({
+         url: feed.url + displayedMarket.epic
+      }).done(function(result) {
+
+         for (i = 0; i < displayedCharts.length; i++) {
+            currentMarkets = displayedCharts[i].data.filter(function(d){ return d.market.epic == displayedMarket.epic });
+            if (currentMarkets.length) {
+               currentMarketData = currentMarkets[0];
+               updateFeed(result, currentMarketData.market, feedName);
+               calculateIndex(currentMarketData);
+               computeChartData(displayedCharts[i].chart, displayedCharts[i].data);
+            }
+         }
+
+         displayBreakdown(displayedMarket);
+
+         currentFeed++;
+         if (currentFeed >= feedKeys.length) {
+            currentFeed = 0;
+         }
+
+      }).always(function() {
+
+         setTimeout(frame, BREAKDOWN_STREAMING_TIME);
+      });
+   }
+
+   setTimeout(frame, BREAKDOWN_STREAMING_TIME);
 }
 
 function updateFeed(result, market, name) {

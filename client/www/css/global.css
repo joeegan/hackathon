@@ -127,9 +127,10 @@ table {
    overflow: hidden;
 }
 
-#details #volatility, #details #movement {
-  height: 100px;
+#details #volatility.panel .inner, #details #movement.panel .inner {
+  height: 110px;
 }
+
 .sentiment-pie {
    height: 200px;
 }
