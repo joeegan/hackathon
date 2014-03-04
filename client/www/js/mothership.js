@@ -31,6 +31,11 @@ function init() {
       ev.preventDefault();
       data = $(this).serialize();
       $.post(SERVER_URL + '/login', data, function(details) {
+         if (details.errorCode) {
+            alert('Login failed');
+            console.log(details);
+            return;
+         }
          $.ajaxSetup({
             headers: {
                'X-SECURITY-TOKEN': details['X-SECURITY-TOKEN'],
@@ -65,21 +70,10 @@ function init() {
    $('#sentiment').hide();
    $('#volatility').hide();
    $('#movement').hide();
-
-   //todo: remove
-   showInterface();
 }
 $(document).ready(init);
 
 function showInterface() {
-
-   //todo: remove
-   $.ajaxSetup({
-      headers: {
-         'X-SECURITY-TOKEN': 'c1382d436b60425bc4a37f8fec16c15f30432e277822f1ad4473ca5dfb7ef128',
-         'CST': '637214333443764216ba1aa3eee886f4b55de2503ed2bc0c2587482c225eb59a'
-      }
-   });
 
    $('#login').hide();
    $('#interface').show();
