@@ -19,7 +19,8 @@ var SERVER_URL = "http://localhost:8080",
       }
    },
    feedKeys = Object.keys(feeds),
-   selectedEpic;
+   selectedFeeds = [],
+   displayedMarket;
 
 function init() {
 
@@ -41,6 +42,21 @@ function init() {
          alert('Login failed');
          console.log(err);
       });
+   });
+
+   $('#feeds input:checked').each(function() {
+      selectedFeeds.push(this.value);
+   });
+
+   $('#feeds').on('click', 'input', function() {
+      if ($(this).prop('checked')) {
+         selectedFeeds.push(this.value);
+      } else if (selectedFeeds.indexOf(this.value) > -1) {
+         selectedFeeds.splice(selectedFeeds.indexOf(this.value), 1);
+      }
+      if (displayedMarket) {
+         displayBreakdown(displayedMarket);
+      }
    });
 
    $('#login').show();
@@ -114,11 +130,9 @@ function initChart(data, selector, title) {
 
    $(selector).highcharts({
       chart : {
-         plotBackgroundColor: null,
-         plotBorderWidth: null,
-         plotShadow: false,
          events : {
             load : function() {
+               selectFeeds(this.series[0], data);
                startRoundRobin(this.series[0], data);
             }
          }
@@ -157,6 +171,14 @@ function initChart(data, selector, title) {
    });
 }
 
+function selectFeeds(chart, data) {
+
+   $('#feeds').on('click', 'input', function() {
+      calculateIndexes(data);
+      computeChartData(chart, data);
+   });
+}
+
 function startRoundRobin(chart, data) {
 
    var currentFeed = 0,
@@ -166,19 +188,18 @@ function startRoundRobin(chart, data) {
 
       var feedName = feedKeys[currentFeed],
          feed = feeds[feedName],
-         market = data[currentMarket].market;
+         currentMarketData = data[currentMarket];
 
       $.ajax({
-         url: feed.url + market.epic
+         url: feed.url + currentMarketData.market.epic
       }).done(function(result) {
 
-         updateFeed(result, market, feedName);
-         updateIndex(result, market, feedName);
-         computeChartData(data);
-         chart.setData(data, true);
+         updateFeed(result, currentMarketData.market, feedName);
+         calculateIndex(currentMarketData);
+         computeChartData(chart, data);
 
-         if (selectedEpic == market.epic) {
-            displayBreakdown(market);
+         if (displayedMarket && displayedMarket.epic == currentMarketData.market.epic) {
+            displayBreakdown(displayedMarket);
          }
 
          currentMarket++;
@@ -202,23 +223,34 @@ function startRoundRobin(chart, data) {
 function updateFeed(result, market, name) {
 
    market.feeds[name] = result;
+   market.indexes[name] = result.index;
 }
 
-function updateIndex(result, market, name) {
+function calculateIndexes(data) {
+
+   data.forEach(calculateIndex);
+}
+
+function calculateIndex(data) {
 
    var sum = 0,
-      key;
+      feed;
 
-   market.indexes[name] = result.index;
-
-   for (key in market.indexes) {
-      sum += market.indexes[key];
+   if (selectedFeeds.length == 0) {
+      data.market.index = 1;
+      return;
    }
 
-   market.index = sum / Object.keys(market.indexes).length;
+   for (feed in data.market.indexes) {
+      if (selectedFeeds.indexOf(feed) > -1) {
+         sum += data.market.indexes[feed];
+      }
+   }
+
+   data.market.index = sum / selectedFeeds.length;
 }
 
-function computeChartData(data) {
+function computeChartData(chart, data) {
 
    var total = 0,
       market;
@@ -229,13 +261,17 @@ function computeChartData(data) {
    for (market in data) {
       data[market].y = (data[market].market.index / total) * 100;
    }
+
+   chart.setData(data, true);
 }
 
 function displayBreakdown(market) {
 
    var feed;
 
-   selectedEpic = market.epic;
+   displayedMarket = market;
+
+   $('#title').html(market.name);
 
    for (feed in feeds) {
       feeds[feed].render(market.feeds[feed]);
@@ -244,7 +280,7 @@ function displayBreakdown(market) {
 
 function renderTwitter(data) {
 
-   if (!data) {
+   if (!data || selectedFeeds.indexOf('twitter') == -1) {
       $('#twitter').hide();
       return;
    }
@@ -253,13 +289,13 @@ function renderTwitter(data) {
    $('.twitter-count').html(data.count);
    $('.twitter-tweets').empty();
    data.tweets.forEach(function(tweet) {
-      $('.twitter-tweets').append('<tr><td>' + tweet + '</td></tr>');
+      $('.twitter-tweets').append('<div>' + tweet + '</div>');
    });
 }
 
 function renderSentiment(data) {
 
-   if (!data) {
+   if (!data || selectedFeeds.indexOf('sentiment') == -1) {
       $('#sentiment').hide();
       return;
    }
@@ -268,9 +304,7 @@ function renderSentiment(data) {
    $('.sentiment-dir').html(data.longPositionPercentage >= 50 ? 'long' : 'short');
    $('.sentiment-pie').highcharts({
       chart: {
-         plotBackgroundColor: null,
-         plotBorderWidth: null,
-         plotShadow: false
+         backgroundColor: '#eee'
       },
       title: {
          text: ''
@@ -303,7 +337,7 @@ function renderSentiment(data) {
 
 function renderVolatility(data) {
 
-   if (!data) {
+   if (!data || selectedFeeds.indexOf('volatility') == -1) {
       $('#volatility').hide();
       return;
    }
@@ -314,7 +348,7 @@ function renderVolatility(data) {
 
 function renderMovement(data) {
 
-   if (!data) {
+   if (!data || selectedFeeds.indexOf('movement') == -1) {
       $('#movement').hide();
       return;
    }

@@ -27,31 +27,45 @@
          <div id="suggested_markets"></div>
          <div id="currently_trading"></div>
          <div id="details">
+            <h1 id="title"></h1>
             <div class="panel" id="twitter">
-               <h2>Twitter: <span class="twitter-index"></span> / 10</h2>
-               <p>There have been <span class="twitter-count"></span> recent tweets</p>
-               <table>
-                  <tr class="twitter-tweets">
-                  </tr>
-               </table>
+               <div class="wrap">
+                  <div class="inner">
+                     <h2>Twitter: <span class="twitter-index"></span> / 10</h2>
+                     <p>There have been <span class="twitter-count"></span> recent tweets</p>
+                     <div class="twitter-tweets"></div>
+                  </div>
+               </div>
             </div>
             <div class="panel" id="sentiment">
-               <h2>Sentiment: <span class="sentiment-index"></span> / 10</h2>
-               <p>People tend to be going <span class="sentiment-dir"></span> at the moment</p>
-               <div class="sentiment-pie"></div>
+               <div class="wrap">
+                  <div class="inner">
+                     <h2>Sentiment: <span class="sentiment-index"></span> / 10</h2>
+                     <p>People tend to be going <span class="sentiment-dir"></span> at the moment</p>
+                     <div class="sentiment-pie"></div>
+                  </div>
+               </div>
             </div>
             <div class="panel" id="volatility">
-               <h2>Volatility: <span class="volatility-index"></span> / 10</h2>
-               <p>The market is <span class="volatility-text"></span> at the moment</p>
+               <div class="wrap">
+                  <div class="inner">
+                     <h2>Volatility: <span class="volatility-index"></span> / 10</h2>
+                     <p>The market is <span class="volatility-text"></span> at the moment</p>
+                  </div>
+               </div>
             </div>
             <div class="panel" id="movement">
-               <h2>Movement: <span class="movement-index"></span> / 10</h2>
-               <p>The market is <span class="movement-text"></span> at the moment</p>
+               <div class="wrap">
+                  <div class="inner">
+                     <h2>Movement: <span class="movement-index"></span> / 10</h2>
+                     <p>The market is <span class="movement-text"></span> at the moment</p>
+                  </div>
+               </div>
             </div>
          </div>
          <div id="feeds">
             <h2>Feeds</h2>
-            <label><input type="checkbox" value="sentiment" checked="checked" /> sentiment</label>
+            <label><input type="checkbox" value="sentiment" /> sentiment</label>
             <label><input type="checkbox" value="movement" />movement</label>
             <label><input type="checkbox" value="volatility" />volatility</label>
             <label><input type="checkbox" value="twitter" />twitter</label>
