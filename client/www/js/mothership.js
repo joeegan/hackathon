@@ -34,6 +34,11 @@ function init() {
       ev.preventDefault();
       data = $(this).serialize();
       $.post(SERVER_URL + '/login', data, function(details) {
+         if (details.errorCode) {
+            alert('Login failed');
+            console.log(details);
+            return;
+         }
          $.ajaxSetup({
             headers: {
                'X-SECURITY-TOKEN': details['X-SECURITY-TOKEN'],
