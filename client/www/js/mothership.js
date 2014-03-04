@@ -143,7 +143,7 @@ function initChart(data, selector, title) {
          text: title
       },
       tooltip: {
-         pointFormat: '<b>{point.percentage:.f}%</b>'
+         pointFormat: '<b>{point.market.type}</b>'
       },
       plotOptions: {
          series: {
@@ -155,7 +155,7 @@ function initChart(data, selector, title) {
                enabled: true,
                color: '#000000',
                connectorColor: '#000000',
-               format: '<b>{point.name}</b> {point.percentage:.1f} %'
+               format: '<b>{point.name}</b> {point.market.type}'
             },
             point: {
                events: {
@@ -320,7 +320,7 @@ function displayBreakdown(market) {
 
    displayedMarket = market;
 
-   $('#title').html(market.name);
+   $('#title').html(market.name + ' (' + market.type + ')');
 
    for (feed in feeds) {
       feeds[feed].render(market.feeds[feed]);

@@ -13,7 +13,7 @@ module.exports = function(client, log, watchlists, history, related) {
          watchlistMarkets = watchlistMarkets.slice(0,8);
          for (var i=0; i < watchlistMarkets.length; i++) {
             if (epics.indexOf(watchlistMarkets[i].epic) == -1) {
-               watchlistMarkets[i].type = 'watchlist';
+               watchlistMarkets[i].type = 'In a watchlist';
                epics.push(watchlistMarkets[i].epic);
                data.push(watchlistMarkets[i]);
             }
@@ -23,7 +23,7 @@ module.exports = function(client, log, watchlists, history, related) {
             historyMarkets = historyMarkets.slice(0,8);
             for (var i=0; i < historyMarkets.length; i++) {
                if (epics.indexOf(historyMarkets[i].epic) == -1) {
-                  historyMarkets[i].type = 'historic';
+                  historyMarkets[i].type = 'Traded on before';
                   epics.push(historyMarkets[i].epic);
                   data.push(historyMarkets[i]);
                }
@@ -31,9 +31,9 @@ module.exports = function(client, log, watchlists, history, related) {
 
             data = shuffle(data);
 
-            computeRelated(req, res, next, data, epics, data[Math.floor(Math.random()*data.length)].epic, function() {
+            computeRelated(req, res, next, data, epics, watchlistMarkets[Math.floor(Math.random()*watchlistMarkets.length)], 'a watchlist', function() {
 
-               computeRelated(req, res, next, data, epics, data[Math.floor(Math.random()*data.length)].epic, function() {
+               computeRelated(req, res, next, data, epics, historyMarkets[Math.floor(Math.random()*historyMarkets.length)], 'your history', function() {
                   
                   callback(shuffle(data));
                });
@@ -43,13 +43,18 @@ module.exports = function(client, log, watchlists, history, related) {
       });
    }
 
-   function computeRelated(req, res, next, data, epics, epic, callback) {
+   function computeRelated(req, res, next, data, epics, market, from, callback) {
 
-      related.compute(req, res, next, epic, function(relatedMarkets) {
+      if (!market) {
+         callback();
+         return;
+      }
+
+      related.compute(req, res, next, market.epic, function(relatedMarkets) {
 
          for (var i=0; i < relatedMarkets.length; i++) {
             if (epics.indexOf(relatedMarkets[i].epic) == -1) {
-               relatedMarkets[i].type = 'related';
+               relatedMarkets[i].type = 'Related to ' + market.name + ' which is in ' + from;
                epics.push(relatedMarkets[i].epic);
                data.push(relatedMarkets[i]);
             }
