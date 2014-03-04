@@ -155,7 +155,7 @@ function initChart(data, selector, title) {
                enabled: true,
                color: '#000000',
                connectorColor: '#000000',
-               format: '<b>{point.name}</b> {point.market.type}'
+               format: '<b>{point.name}</b>'
             },
             point: {
                events: {
