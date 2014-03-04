@@ -1,0 +1,324 @@
+var SERVER_URL = "http://localhost:8080",
+   CLIENT_URL = "http://localhost:8888",
+   feeds = {
+      sentiment: {
+         url: SERVER_URL+'/sentiment/',
+         render: renderSentiment
+      },
+      twitter: {
+         url: SERVER_URL+'/twitter/',
+         render: renderTwitter
+      },
+      volatility: {
+         url: SERVER_URL+'/volatility/',
+         render: renderVolatility
+      },
+      movement: {
+         url: SERVER_URL+'/movement/',
+         render: renderMovement
+      }
+   },
+   feedKeys = Object.keys(feeds),
+   selectedEpic;
+
+function init() {
+
+   var $form = $('form'),
+      data;
+
+   $form.on('submit', function(ev){
+      ev.preventDefault();
+      data = $(this).serialize();
+      $.post(SERVER_URL + '/login', data, function(details) {
+         $.ajaxSetup({
+            headers: {
+               'X-SECURITY-TOKEN': details['X-SECURITY-TOKEN'],
+               'CST': details['CST']
+            }
+         });
+         showInterface();
+      }).fail(function(err) {
+         alert('Login failed');
+         console.log(err);
+      });
+   });
+
+   $('#login').show();
+   $('#interface').hide();
+   $('#twitter').hide();
+   $('#sentiment').hide();
+   $('#volatility').hide();
+   $('#movement').hide();
+
+   //todo: remove
+   showInterface();
+}
+$(document).ready(init);
+
+function showInterface() {
+
+   //todo: remove
+   $.ajaxSetup({
+      headers: {
+         'X-SECURITY-TOKEN': 'c1382d436b60425bc4a37f8fec16c15f30432e277822f1ad4473ca5dfb7ef128',
+         'CST': '637214333443764216ba1aa3eee886f4b55de2503ed2bc0c2587482c225eb59a'
+      }
+   });
+
+   $('#login').hide();
+   $('#interface').show();
+
+   loadSuggestedMarkets(function(suggestedMarkets, tradingMarkets) {
+      initChart(tradingMarkets, '#currently_trading', 'Currently traded markets');
+      initChart(suggestedMarkets, '#suggested_markets', 'Suggested markets');
+   });
+}
+
+function loadSuggestedMarkets(callback) {
+
+   var suggestedMarkets,
+      tradingMarkets;
+
+   $.ajax({
+      url: SERVER_URL+'/suggestedmarkets'
+   }).done(function(data) {
+      suggestedMarkets = initMarketsChartData(data);
+      $.ajax({
+         url: SERVER_URL+'/currentlytrading'
+      }).done(function(data) {
+         tradingMarkets = initMarketsChartData(data);
+         callback(suggestedMarkets, tradingMarkets);
+      });
+   });
+}
+
+function initMarketsChartData(markets) {
+
+   var data = [];
+
+   for (var market in markets) {
+      markets[market].feeds = {};
+      markets[market].indexes = {};
+      markets[market].index = 1;
+      data.push({
+         name: markets[market].name,
+         market: markets[market],
+         y: Object.keys(markets).length / 100
+      });
+   }
+
+   return data;
+}
+
+function initChart(data, selector, title) {
+
+   $(selector).highcharts({
+      chart : {
+         plotBackgroundColor: null,
+         plotBorderWidth: null,
+         plotShadow: false,
+         events : {
+            load : function() {
+               startRoundRobin(this.series[0], data);
+            }
+         }
+      },
+      title: {
+         text: title
+      },
+      tooltip: {
+         pointFormat: '<b>{point.percentage:.f}%</b>'
+      },
+      plotOptions: {
+         series: {
+            slicedOffset: 0,
+            animation: true,
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+               enabled: true,
+               color: '#000000',
+               connectorColor: '#000000',
+               format: '<b>{point.name}</b> {point.percentage:.1f} %'
+            },
+            point: {
+               events: {
+                  click: function() {
+                     displayBreakdown(this.market);
+                  }
+               }
+            }
+         }
+      },
+      series: [{
+         type: 'pie',
+         data: data
+      }]
+   });
+}
+
+function startRoundRobin(chart, data) {
+
+   var currentFeed = 0,
+      currentMarket = 0;
+
+   function frame() {
+
+      var feedName = feedKeys[currentFeed],
+         feed = feeds[feedName],
+         market = data[currentMarket].market;
+
+      $.ajax({
+         url: feed.url + market.epic
+      }).done(function(result) {
+
+         updateFeed(result, market, feedName);
+         updateIndex(result, market, feedName);
+         computeChartData(data);
+         chart.setData(data, true);
+
+         if (selectedEpic == market.epic) {
+            displayBreakdown(market);
+         }
+
+         currentMarket++;
+         if (currentMarket >= data.length) {
+            currentMarket = 0;
+            currentFeed++;
+            if (currentFeed >= feedKeys.length) {
+               currentFeed = 0;
+            }
+         }
+
+      }).always(function() {
+
+         setTimeout(frame, 1000);
+      });
+   }
+
+   setTimeout(frame, 1000);
+}
+
+function updateFeed(result, market, name) {
+
+   market.feeds[name] = result;
+}
+
+function updateIndex(result, market, name) {
+
+   var sum = 0,
+      key;
+
+   market.indexes[name] = result.index;
+
+   for (key in market.indexes) {
+      sum += market.indexes[key];
+   }
+
+   market.index = sum / Object.keys(market.indexes).length;
+}
+
+function computeChartData(data) {
+
+   var total = 0,
+      market;
+
+   for (market in data) {
+      total += data[market].market.index;
+   }
+   for (market in data) {
+      data[market].y = (data[market].market.index / total) * 100;
+   }
+}
+
+function displayBreakdown(market) {
+
+   var feed;
+
+   selectedEpic = market.epic;
+
+   for (feed in feeds) {
+      feeds[feed].render(market.feeds[feed]);
+   }
+}
+
+function renderTwitter(data) {
+
+   if (!data) {
+      $('#twitter').hide();
+      return;
+   }
+   $('#twitter').show();
+   $('.twitter-index').html(data.index.toFixed(1));
+   $('.twitter-count').html(data.count);
+   $('.twitter-tweets').empty();
+   data.tweets.forEach(function(tweet) {
+      $('.twitter-tweets').append('<tr><td>' + tweet + '</td></tr>');
+   });
+}
+
+function renderSentiment(data) {
+
+   if (!data) {
+      $('#sentiment').hide();
+      return;
+   }
+   $('#sentiment').show();
+   $('.sentiment-index').html(data.index.toFixed(1));
+   $('.sentiment-dir').html(data.longPositionPercentage >= 50 ? 'long' : 'short');
+   $('.sentiment-pie').highcharts({
+      chart: {
+         plotBackgroundColor: null,
+         plotBorderWidth: null,
+         plotShadow: false
+      },
+      title: {
+         text: ''
+      },
+      tooltip: {
+         pointFormat: '<b>{point.y:.f}%</b>'
+      },
+      plotOptions: {
+         series: {
+            animation: false,
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+               enabled: true,
+               color: '#000000',
+               connectorColor: '#000000',
+               format: '<b>{point.name}</b> {point.y:.1f} %'
+            }
+         }
+      },
+      series: [{
+         type: 'pie',
+         data: [
+            { name: 'Long', y: data.longPositionPercentage },
+            { name: 'Short', y: data.shortPositionPercentage }
+         ]
+      }]
+   });
+}
+
+function renderVolatility(data) {
+
+   if (!data) {
+      $('#volatility').hide();
+      return;
+   }
+   $('#volatility').show();
+   $('.volatility-index').html(data.index.toFixed(1));
+   $('.volatility-text').html(data.index<3 ? 'not very volatile' : (data.index>7 ? 'very volatile' : 'quite volatile'));
+}
+
+function renderMovement(data) {
+
+   if (!data) {
+      $('#movement').hide();
+      return;
+   }
+   $('#movement').show();
+   $('.movement-index').html(data.index.toFixed(1));
+   $('.movement-text').html(data.index<3 ? 'not moving very much' : (data.index>7 ? 'moving a lot' : 'moving a fair amount'));
+}
