@@ -124,7 +124,7 @@ table {
 
 #details .panel .inner {
    height: 300px;
-   overflow: hidden;
+   overflow: auto;
 }
 
 #details #volatility.panel .inner, #details #movement.panel .inner {
