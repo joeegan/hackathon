@@ -68,6 +68,7 @@ function init() {
    });
 
    $('#login').show();
+   $('#feeds').hide();
    $('#interface').hide();
    $('#twitter').hide();
    $('#sentiment').hide();
@@ -80,6 +81,7 @@ function showInterface() {
 
    $('#login').hide();
    $('#interface').show();
+   $('#feeds').show();
 
    loadSuggestedMarkets(function(suggestedMarkets, tradingMarkets) {
       initChart(tradingMarkets, '#currently_trading', 'Currently traded markets');
@@ -140,10 +142,14 @@ function initChart(data, selector, title) {
          }
       },
       title: {
-         text: title
+         text: title,
+         useHTML: true
       },
       tooltip: {
-         pointFormat: '<b>{point.market.type}</b>'
+         pointFormat: '<b>{point.market.type}</b>',
+         style: {
+            fontFamily: 'Arial'
+         }
       },
       plotOptions: {
          series: {
@@ -155,7 +161,10 @@ function initChart(data, selector, title) {
                enabled: true,
                color: '#000000',
                connectorColor: '#000000',
-               format: '<b>{point.name}</b>'
+               format: '<b>{point.name}</b>',
+               style: {
+                  fontFamily: 'Arial'
+               }
             },
             point: {
                events: {
@@ -169,7 +178,10 @@ function initChart(data, selector, title) {
       series: [{
          type: 'pie',
          data: data
-      }]
+      }],
+      credits: {
+         enabled: false
+      }
    });
 }
 
@@ -359,7 +371,10 @@ function renderSentiment(data) {
          text: ''
       },
       tooltip: {
-         pointFormat: '<b>{point.y:.f}%</b>'
+         pointFormat: '<b>{point.y:.f}%</b>',
+         style: {
+            fontFamily: 'Arial'
+         }
       },
       plotOptions: {
          series: {
@@ -370,7 +385,10 @@ function renderSentiment(data) {
                enabled: true,
                color: '#000000',
                connectorColor: '#000000',
-               format: '<b>{point.name}</b> {point.y:.1f} %'
+               format: '<b>{point.name}</b> {point.y:.1f} %',
+               style: {
+                  fontFamily: 'Arial'
+               }
             }
          }
       },
@@ -380,7 +398,10 @@ function renderSentiment(data) {
             { name: 'Long', y: data.longPositionPercentage },
             { name: 'Short', y: data.shortPositionPercentage }
          ]
-      }]
+      }],
+      credits: {
+         enabled: false
+      }
    });
 }
 

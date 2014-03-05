@@ -41,23 +41,35 @@ footer p {
    padding: 5px;
 }
 #page_header h1 {
-   padding-top: 13px;
+   padding-top: 16px;
    margin: 0;
+   text-transform: uppercase;
+   font-size: 18px;
 }
 #page_header img {
    float: left;
-   padding-right: 5px;
+   padding-right: 15px;
 }
 #wrapper {
-	 margin: 30px auto;
    background: #fff;
-   width: 90%;
-   padding: 10px;
+   padding: 20px 10px;
 }
+#wrapper h1 {
+   margin: 16px 10px;
+   text-align: center;
+}
+
 #suggested_markets, #currently_trading {
 	width: 50%;
 	height: 400px;
 	float: left;
+}
+.highcharts-title {
+   margin-top: -8px !important;
+   font-family: 'Arial' !important;
+   color: #333 !important;
+   border: 1px solid #333;
+   padding: 4px;
 }
 
 button {
@@ -94,20 +106,35 @@ table {
 }
 
 #feeds {
-   margin: 20px 0;
+   position: absolute;
+   right: 20px;
+   top: 20px;
+}
+
+#feeds h2 {
+   margin: 0 20px;
+}
+#feeds label {
+   font-size: 1.3em;
+   margin-right: 10px;
+}
+#feeds label.streaming {
+   color: #ada;
+}
+
+#feeds input {
+   vertical-align: baseline;
+   margin-right: 0.5em;
 }
 
 .twitter-tweets div {
    margin: 10px 0;
 }
 
-.streaming {
-   margin: 20px 0;
-   display: block;
-}
-
 #details {
    clear: both;
+   margin: 20px 0;
+   overflow: hidden;
 }
 
 #details .panel {
@@ -117,10 +144,14 @@ table {
 }
 
 #details .panel .wrap {
-   margin: 20px;
-   padding: 20px;
+   margin: 10px;
+   padding: 10px;
    background: #eee;
 }
+#details .panel .wrap h2 {
+   margin-top: 0;
+}
+
 
 #details .panel .inner {
    height: 300px;
